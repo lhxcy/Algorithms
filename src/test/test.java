@@ -14,7 +14,6 @@ import static algorithms.Print.*;
 /**
  * Created by XCY on 2017/3/24.
  */
-///////////////////////////////
 public class test {
     private static void sortID(int [] a){
 //        double p=1.0/32;
