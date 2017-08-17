@@ -31,7 +31,7 @@ public class _47_PermutationsII {
                 if (used[i]){
                     continue;//第i个元素已经使用过，所以跳过后面操作
                 }
-                if (i > 0 && nums[i] == nums[i - 1] && used[i - 1]){
+                if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]){
                     //这里判断条件也可以是i > 0 && nums[i] == nums[i - 1] && used[i - 1]，
                     // 此时重复时相当于只是使用前面一个相同而且该元素未使用的情况，
                     // 即当used[i - 1]用过并且也满足前两个条件时，跳过该元素
@@ -42,8 +42,7 @@ public class _47_PermutationsII {
                     //也即当used[i - 1]没有用过并且也满足前两个条件时，跳过该元素
                     //when a number has the same value with its previous,
                     // we can use this number only if his previous is used
-                    System.out.println("kkkkkkk ");
-
+//                    System.out.println("kkkkkkk ");
                     continue;
                 }
                 used[i] = true;

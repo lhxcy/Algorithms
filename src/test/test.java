@@ -12,6 +12,7 @@ import java.util.*;
 import static algorithms.Print.*;
 
 /**
+ *
  * Created by XCY on 2017/3/24.
  */
 public class test {
@@ -113,14 +114,15 @@ public class test {
         arr[e] = temp;
     }
     public static void main(String []args){
+        println(8.5342 * 8.5342 * 8.5342);
 //        println("gjgj");
         /////////
-        String str = "gjrlwp";
-        println(str);
-        char[] chs = str.toCharArray();
-        Arrays.sort(chs);
-        println(String.valueOf(chs));
-//        char ch = 'b';#######
+//        String str = "gjrlwp";
+//        println(str);
+//        char[] chs = str.toCharArray();
+//        Arrays.sort(chs);
+//        println(String.valueOf(chs));
+////        char ch = 'b';#######
 //        int c = 98;
 //        println((char)c);
 //        byte b = 3;
@@ -144,8 +146,8 @@ public class test {
 //        int [][] a = {{0,1,2},{3,4,5},{6,7,8},{9,10,11}};
 //        println(a.length);
 //        println(a[0].length);
-        int p = 2;
-        println(Integer.toBinaryString(p));
+//        int p = 2;
+//        println(Integer.toBinaryString(p));
 //        p >>= 1;
 //        println(Integer.toBinaryString(p));
 //        println(p&2);
