@@ -1,5 +1,6 @@
 package test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,8 +115,48 @@ public class test {
         arr[e] = temp;
     }
     public static void main(String []args){
-        println(8.5342 * 8.5342 * 8.5342);
+
+
+//        char ch = 'a';
+//        ch = ch + 1;
+//        ch += 1;
+
+//        BigDecimal t = BigDecimal.ONE;
+//        BigDecimal s = BigDecimal.valueOf(0);
+//        println(s);
+//        double res = s.doubleValue();
+
+//        String str = "A0000B000";
+//        char[] chs = str.toCharArray();
+//        for (int i = 0; i < chs.length; i++){
+//            print(chs[i]);
+//        }
+//        println();
+//        println(chs.length);
+////        println();
+//        int start = 1;
+//        int count = 4;
+//        while (count-- != 0){
+//            chs[start++] = 0;
+//        }
+//        for (int i = 0; i < chs.length; i++){
+//            print(chs[i]);
+//        }
+//        println();
+//        println(chs.length);
+////        println();
+//        println(String.valueOf(chs));
+
+//        println(8.5342 * 8.5342 * 8.5342);
 //        println("gjgj");
+//        String str = "abc";
+//        switch (str){
+//            case "abc":
+//                System.out.println(str);
+//                break;
+//            default:
+//                println("nnnnnnn");
+        }
         /////////
 //        String str = "gjrlwp";
 //        println(str);
@@ -289,5 +330,5 @@ public class test {
 ////        }
 //        test(l1);
 //    }
-}
+//}
 
