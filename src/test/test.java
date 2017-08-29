@@ -118,6 +118,20 @@ public class test {
 
 
 
+//        int[] arr = {2,1,3,5,4};
+//        int temp;
+//        for (int i = 0; i < arr.length - 1; i++){//冒泡排序
+//            for (int j = 0; j < arr.length - i - 1; j++){
+//                if (arr[j] > arr[j + 1]){//另一种改进，一次遍历只是交换一次值，记录下标
+//                    temp = arr[j];
+//                    arr[j] = arr[j + 1];
+//                    arr[j + 1] = temp;
+//                }
+//            }
+//        }
+//        for (int k : arr){
+//            print(k + " ");
+//        }
 //        char ch = 'a';
 //        ch = ch + 1;
 //        ch += 1;
