@@ -771,7 +771,7 @@ class MyCompare implements Comparator{
 }
 class test11 {
     public static void main(String[] args) {
-        TreeSet ts = new TreeSet(new MyCompare());
+        TreeSet<student11> ts = new TreeSet(new MyCompare());
         ts.add(new student11("lili0", 10));
         ts.add(new student11("lili1", 15));
         ts.add(new student11("lili2", 14));

@@ -2,6 +2,8 @@ package test;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.sql.Array;
+import java.sql.SQLRecoverableException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -72,11 +74,228 @@ import java.util.*;
         所以记住转换流什么时候使用：字符和字节直接按的桥梁，通常涉及到字符编码转换时，需要用到转换流
  */
 /*
+有5个学生，每个学生3门课程
+从键盘输入数据（包括姓名，三门课成绩）
+输入格式，如：zhangsan 80，80，80  计算出总成绩
+并把学生信息和计算出的总分高低顺序存放在磁盘文件"studinfo.txt"中
+
+1：描述学生对象
+2：定义一个可操作学生对象的工具类
+思想：
+    1：通过获取键盘录入的一行数据，并将该行中的信息取出封装成学生对象
+    2：因为学生有很多，匿名就需要存储，使用到集合，因为要对学生的总分排序，所以可以使用TreeSet
+    3：将集合信息写入到一个文件中
+ */
+//定义比较器逆转排序方式，使其按总成绩降序排序
+class DecSum implements Comparator{
+    public int compare(Object obj1, Object obj2){
+        if (!(obj1 instanceof studentDemo)  || !(obj2 instanceof studentDemo)){
+            throw new ClassCastException("类型不匹配");
+        }
+        studentDemo s1 = (studentDemo)obj1;
+        studentDemo s2 = (studentDemo)obj2;
+        int num = new Double(s2.getSum()).compareTo(s1.getSum());
+        if (num == 0){
+            return s1.getName().compareTo(s1.getName());
+        }
+        return num;
+    }
+}
+
+
+class studentDemo implements Comparable<studentDemo>{
+    private String name;
+    private double math,chinese,englist;
+    private double sum;
+    studentDemo(String name, double math, double chinese, double englist){
+        this.name = name;
+        this.math = math;
+        this.englist = englist;
+        this.chinese = chinese;
+        sum = math + englist + chinese;
+    }
+    public int compareTo(studentDemo s){//升序排序
+        int num = new Double(this.sum).compareTo(s.sum);
+        if (num == 0){
+            return this.name.compareTo(s.name);
+        }
+        return num;
+    }
+    public String getName(){
+        return name;
+    }
+    public double getSum(){
+        return sum;
+    }
+    public int hashCodde(){
+        return name.hashCode() * 37;
+    }
+    public boolean equals(Object obj){
+        if (!(obj instanceof studentDemo)){
+            throw new ClassCastException("类型不匹配");
+        }
+        studentDemo s = (studentDemo)obj;
+        return this.name.equals(s.name) && this.sum == s.sum;
+    }
+    public String toString(){
+        return "Student:[ "+ name + ": " + math + " " + chinese + " " + englist + " ]";
+    }
+}
+//zhangsan,40,20,90
+//lisi,90,90,90
+//wangwu,10,20,34
+//zhaoliu,30,53,56
+//zhouqi,35,56,75
+//sunba,34,65,86
+class StudentInfoTool{
+    public static Set<studentDemo> getStudents() throws IOException{//总分升序排序
+        return getStudents(null);
+    }
+    public static Set<studentDemo> getStudents(Comparator<studentDemo> cmp) throws IOException{//总分降序排序
+        BufferedReader bufr = new BufferedReader(new InputStreamReader(System.in));
+        TreeSet<studentDemo> stus = null;
+        if (cmp == null)
+            stus = new TreeSet<studentDemo>();
+        else
+            stus = new TreeSet<studentDemo>(cmp);
+
+        myPrint("请参照下列输入示例输入数据，输入over结束输入");
+        myPrint("     例如：zhangsan,80,80,80");
+        String line = null;
+        while((line = bufr.readLine()) != null){
+            if (("over").equals(line)){
+                break;
+            }
+            String[] info = line.split(",");
+            studentDemo stu = new studentDemo(info[0],
+                                                Double.parseDouble(info[1]),
+                                                Double.parseDouble(info[2]),
+                                                Double.parseDouble(info[3]));
+            stus.add(stu);
+        }
+        bufr.close();
+        return stus;
+    }
+    public static void write2File(Set<studentDemo> set) throws IOException{
+        BufferedWriter bufw = new BufferedWriter(new FileWriter("studinfo.txt"));
+        for (studentDemo s : set){
+            bufw.write(s.toString() + "\t");
+//            bufw.write(new Double(s.getSum()).toString());
+//            bufw.write(Double.toString(s.getSum()));//三种都可以
+            bufw.write(" " + s.getSum());
+            bufw.newLine();
+            bufw.flush();
+        }
+        bufw.close();
+    }
+    public static void myPrint(Object obj){
+        System.out.println(obj);
+    }
+}
+class Practice{
+    public static void main(String[] args) throws IOException{
+//        Comparator<studentDemo> cmp = Collections.reverseOrder();//逆转比较器   第一种方法改变对象自然升序为降序
+//        Set<studentDemo> stus = StudentInfoTool.getStudents(cmp);
+        Set<studentDemo> stus = StudentInfoTool.getStudents(new DecSum());//第二种方法改变对象自然升序为降序
+        StudentInfoTool.write2File(stus);
+    }
+    public static void myPrint(Object obj){
+        System.out.println(obj);
+    }
+}
+
+
+
+/*
+联通问题
+11000001
+10101010
+11001101
+10101000
+GBK  与 utf-8之间冲突
+ */
+class EncoderDemo2 {
+    public static void main(String[] args) throws IOException {
+        String s = "联通";
+        byte[] b = s.getBytes("GBK");
+        for (byte b1 : b){
+            myPrint(Integer.toBinaryString(b1&255));
+        }
+    }
+    public static void myPrint(Object obj){
+        System.out.println(obj);
+    }
+}
+
+
+/*
+编码：字符串变成字节数组
+解码：字节数组变为字符串
+String --> byte[]    str.getBytes(charsetName)  默认编码
+byte[] --> String    new String(byte[], charsetName)
+ */
+class EncoderDemo1{
+    public static void main(String[] args) throws IOException{
+        wrongDecoder();
+    }
+    public static void encoderAndDecoder() throws IOException{
+        String s = "你好";
+//        byte[] by = s.getBytes();//默认utf-8
+        byte[] by = s.getBytes("GBK");
+        myPrint(Arrays.toString(by));
+        String s1 = new String(by,"GBK");
+        myPrint(s1);
+    }
+    public static void wrongDecoder() throws IOException{//解码查错编码表，再转换回去
+        String s = "你好";
+        byte[] by = s.getBytes("GBK");
+        myPrint(Arrays.toString(by));
+        String s1 = new String(by,"ISO8859-1");
+        myPrint(s1);
+
+        //对s1进行"ISO8859-1"编码
+        byte[] by2 = s1.getBytes("ISO8859-1");
+        myPrint(Arrays.toString(by2));
+        String s2 = new String(by2,"GBK");
+        myPrint(s2);
+    }
+    public static void myPrint(Object obj){
+        System.out.println(obj);
+    }
+}
+
+
+
+/*
 字符编码
 通过子类转换流完成：InputStreamReader   OutputStreamWriter
 在两个对象进行构造时可以加入字符集
  */
 
+class EncoderStream{
+    public static void main(String[] args) throws IOException{
+//        writeText();
+        readText();
+    }
+    public static void writeText() throws IOException{
+        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("utf_8.txt"),"UTF-8");
+        OutputStreamWriter osw1 = new OutputStreamWriter(new FileOutputStream("gbk.txt"),"GBK");
+        osw.write("你好");
+        osw1.write("你好");
+        osw.close();
+        osw1.close();
+    }
+    public static void readText() throws IOException{
+        InputStreamReader isr = new InputStreamReader(new FileInputStream("gbk.txt"),"GBK");
+        char[] buf = new char[10];
+        int len = isr.read(buf);
+        String s = new String(buf,0,len);
+        myPrint(s);
+    }
+    public static void myPrint(Object obj){
+        System.out.println(obj);
+    }
+}
 
 
 /*

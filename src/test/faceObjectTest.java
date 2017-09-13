@@ -1,5 +1,7 @@
 package test;
 
+import java.util.Properties;
+
 /**
  * Created by XCY on 2017/8/31.
  */
@@ -23,7 +25,7 @@ class Outer1
 }
 public class faceObjectTest {
     public static void main(String[] args){
-        System.out.println("kllllll");
-        System.out.println("kllllll");
+        Properties prop = System.getProperties();
+        prop.list(System.out);
     }
 }
