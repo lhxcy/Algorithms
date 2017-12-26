@@ -651,9 +651,9 @@ PrintWriter
 class PrintStreamDemo{
     public static void main(String[] args) throws IOException{
         BufferedReader bufr = new BufferedReader(new InputStreamReader(System.in));
-//        PrintWriter out = new PrintWriter(System.out,true);
+        PrintWriter out = new PrintWriter(System.out,true);
 //        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("a.txt")),true);
-        PrintWriter out = new PrintWriter(new FileWriter("a.txt"),true);
+//        PrintWriter out = new PrintWriter(new FileWriter("a.txt"),true);
         String line = null;
         while ((line = bufr.readLine()) !=null){
             if ("over".equals(line))
