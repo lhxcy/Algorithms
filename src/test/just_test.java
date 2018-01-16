@@ -3,6 +3,8 @@ package test;
 
 
 
+import jdk.nashorn.internal.objects.Global;
+
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
@@ -1664,47 +1666,47 @@ class FutureTaskForMultiCompute {
 }
 
 
-class KeywordEntity implements Serializable{
-    private static final long serialVersionUID = 1269373329410167403l;
-    private String name;
-    private Long id;
+//class KeywordEntity implements Serializable{
+//    private static final long serialVersionUID = 1269373329410167403l;
+//    private String name;
+//    private Long id;
+//
+//    public KeywordEntity(String name, Long id) {
+//        this.name = name;
+//        this.id = id;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+//}
 
-    public KeywordEntity(String name, Long id) {
-        this.name = name;
-        this.id = id;
-    }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-}
-
-
-class fileTest{
-    public static void main(String[] args){
-        String filePath = "F:/keywordEntity.dat";
-        try {
-            FileInputStream fis = new FileInputStream(filePath);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            Object object = ois.readObject();
-//            System.out.println(object);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-}
+//class fileTest{
+//    public static void main(String[] args){
+//        String filePath = "F:/keywordEntity.dat";
+//        try {
+//            FileInputStream fis = new FileInputStream(filePath);
+//            ObjectInputStream ois = new ObjectInputStream(fis);
+//            Object object = ois.readObject();
+////            System.out.println(object);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
+//}
 
 
 
@@ -1809,17 +1811,117 @@ class LPA {
 
 class TestSomeArray{
     public static void main(String[] args){
-        int[][] array = {{1,1,1,1,1,1,1,1},{1,3,4,5,6,7,8,9}};
-        System.out.println(Arrays.toString(array[1]));
+        int num = 57;
+        char c = '0';
+        char s = (char)(num + '0');
+        System.out.println("dfgs");
+        System.out.println(s);
+        System.out.println(c);
+//        int[][] array = {{1,1,1,1,1,1,1,1},{1,3,4,5,6,7,8,9}};
+//        System.out.println(Arrays.toString(array[1]));
+//        boolean[][] hasVisit = new boolean[3][3];
+//        System.out.println(hasVisit[0][0]);
     }
 }
 
 
+class KeywordEntity implements Serializable{
+    private static final long serialVersionUID = 1269373329410167403l;
+    private String name;
+    private Long id;
+
+    public KeywordEntity(String name, Long id) {
+        this.name = name;
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+}
 
 
+class WriteKeyword{
+    public static void main(String[] args) throws Exception{
+        FileInputStream fKeyword;
+//        ByteArrayInputStream fKeyword;
+        HashMap<String, KeywordEntity> keywords;
+        keywords = new HashMap<String, KeywordEntity>();
+        fKeyword = new FileInputStream("F:/keywordEntity.dat");
+//        fKeyword = new ByteArrayInputStream("F:/keywordEntity.dat");
+        int num = fKeyword.available();
+        System.out.println(num);
+        byte[]ctext=new byte[num];
+        fKeyword.read(ctext);
+        try {
+            ObjectInputStream keywordInputStream = new ObjectInputStream(fKeyword);
+            System.out.println("kkkkk");
+            keywords = (HashMap<String, KeywordEntity>) keywordInputStream.readObject();
+            System.out.println(keywords.size());
+        }catch (Exception ex){
+            System.out.println("异常： " + ex);
+            ex.printStackTrace();
+            fKeyword.close();
+        }
+    }
+}
 
 
+class TestSplit{
+    public static void main(String[] args){
+        String file = "E:\\PycharmCode\\Test\\paper.dat";
+        try {
+            List<String> list = new ArrayList<String>();
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            String line = bufferedReader.readLine();
+            System.out.println(line);
+            String[] strs = line.trim().split(",");
+            for (String str : strs)
+                list.add(str);
+            System.out.println(list);
+            System.out.println(list.get(1));
+            bufferedReader.close();
+        }catch (IOException e){
+            System.out.println(e);
+        }
+    }
+}
 
+class GolbalVer{
+    private int index = 0;
+    public void increase(){
+        ++index;
+    }
+    public void print(){
+        System.out.println("index = " + index);
+    }
+}
 
+class TestGlobalVer{
+    public static void main(String[] args){
+        GolbalVer golbalVer = new GolbalVer();
+        golbalVer.print();
+        golbalVer.increase();
+        golbalVer.print();
+        golbalVer.increase();
+        golbalVer.print();
+        golbalVer.increase();
+        golbalVer.print();
+        golbalVer.increase();
+        golbalVer.print();
+    }
+}
 
 
