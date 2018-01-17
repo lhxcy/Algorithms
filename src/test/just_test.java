@@ -1925,3 +1925,23 @@ class TestGlobalVer{
 }
 
 
+class ATest{
+    ATest(){}
+    ATest(int a){}
+}
+class BTest extends ATest{
+//    BTest(){
+//        super(7);
+//    }
+    BTest(int a){
+    }
+    public static void main(String[] args){
+        StringBuilder stringBuilder = new StringBuilder("ajfjfpajf");
+        String string = stringBuilder.toString();
+        char[]chs = string.toCharArray();
+        System.out.println(string.toCharArray());
+        int[] arr = {1,2};
+        System.out.println(arr);
+
+    }
+}

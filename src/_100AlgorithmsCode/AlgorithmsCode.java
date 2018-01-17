@@ -419,7 +419,7 @@ class AnotherReverseLisNode{
 7：颠倒字符串
  */
 class ReverseString{
-    String reverse(String str){
+    static String reverse(String str){
         char[] chs = str.toCharArray();
         for (int i = 0,j = chs.length - 1; i < j; i++,j--){
             char temp = chs[i];
@@ -434,11 +434,40 @@ class StringTest{
     public static void main(String[] args){
         ReverseString rstr = new ReverseString();
         String str = "hello world!";
+//        char[] chs =str.toCharArray();
         String ans = rstr.reverse(str);
-        System.out.println(ans);
+        System.out.print(ans);
+
+//        for (char c : chs)
+//            System.out.print(c);
     }
 }
 
+/*
+8：颠倒一个句子中的词的顺序,然后颠倒字母的顺序
+ */
+
+class ReverseSentence{
+    void reverseWordsInSentence(String[] strs){
+        for (int i = 0,j = strs.length - 1; i < j; i++,j--){
+            String temp = strs[i];
+            strs[i] = strs[j];
+            strs[j] = temp;
+        }
+    }
+}
+class TestReverseSentence{
+    public static void main(String[] args){
+        ReverseSentence rs = new ReverseSentence();
+        String string = "i am lucy tom";
+        String revesAll = ReverseString.reverse(string);
+        System.out.println(revesAll);
+        String[] strs = string.trim().split(" ");
+        rs.reverseWordsInSentence(strs);
+        for (String str : strs)
+            System.out.print(str + " ");
+    }
+}
 
 
 
