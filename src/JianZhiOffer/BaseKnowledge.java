@@ -1504,7 +1504,12 @@ class IsSubTree{
 描述：定义一个函数，输入一棵二叉树，该函数输出它的镜像
  */
 
-
+class MirrorOfBiTree{
+    void mirrorRecur(BiTreeNode root){
+        if(root == null || (root.left == null && root.right ==null))
+            return;
+    }
+}
 
 
 
