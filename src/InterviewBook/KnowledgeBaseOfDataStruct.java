@@ -184,8 +184,8 @@ class ReverseListNode{
         if (head == null || head.next == null)
             return head;
         ListNode pre = null;
-        ListNode tail = head;
-        while (tail != null){
+        ListNode tail;
+        while (head != null){
             tail = head.next;
             head.next = pre;
             pre = head;

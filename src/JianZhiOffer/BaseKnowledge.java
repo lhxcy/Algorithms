@@ -1228,3 +1228,327 @@ class JudgeNumberInString1{//2
 }
 
 
+
+/*
+21：调整数组顺序使奇数位于偶数前面
+描述：输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，
+所有偶数位于数组的后半部分
+ */
+
+class MoveOddInArray{
+    public void reorderOddEven(int[] arr){
+        if (arr == null)
+            return;
+        int index = 0; //记录奇数下标
+        while ((arr[index]&0x1) == 1) ++index;
+        for (int i = index; i < arr.length; i++){
+            if ((arr[i]&0x1) == 1){
+                int temp = arr[i];
+                arr[i] = arr[index];
+                arr[index++] = temp;
+            }
+        }
+    }
+
+    void reorderOddEven2(int[] arr){
+        if (arr == null)
+            return;
+        int index = 0; //记录奇数下标
+        while ((arr[index]&0x1) == 1) ++index;
+        for (int i = index; i < arr.length; i++){
+            if (isOdd(arr[i])){
+                int temp = arr[i];
+                arr[i] = arr[index];
+                arr[index++] = temp;
+            }
+        }
+    }
+    boolean isOdd(int i){
+        return (i*0x1) == 1;
+    }
+
+    public static void main(String[] args){
+        MoveOddInArray mia = new MoveOddInArray();
+        int[] arr = {1,2,3,4,5,6,7,8,9};
+        for (int t : arr){
+            System.out.print(t + " ");
+        }
+        System.out.println();
+
+        mia.reorderOddEven(arr);
+        for (int t : arr){
+            System.out.print(t + " ");
+        }
+    }
+}
+
+
+
+/*
+22：链表中倒数第K个节点
+描述：输入一个链表，输出链表中倒数第K个节点
+ */
+class FindKthListNode{
+    public static void main(String[] args){
+
+    }
+    ListNode findKthToTail(ListNode head, int k){//默认长度大于K
+        ListNode preNode = head;
+        ListNode lastNode = head;
+        for (int i = 0; i < k - 1; i++){
+            preNode = preNode.next;
+        }
+        while (preNode.next != null){
+            preNode = preNode.next;
+            lastNode = lastNode.next;
+        }
+        return lastNode;
+    }
+
+    ListNode findKthToTail1(ListNode head, int k){//考虑长度小于K的情况
+        if (head == null || k == 0)
+            return null;
+        ListNode preNode = head;
+        ListNode lastNode = head;
+        for (int i = 0; i < k - 1; i++){
+            if (preNode.next != null)
+                preNode = preNode.next;
+            else
+                return null;//跳出当前方法
+     }
+        while (preNode.next != null){
+            preNode = preNode.next;
+            lastNode = lastNode.next;
+        }
+        return lastNode;
+    }
+}
+
+/*
+23：链表中环的入口节点
+描述：如果一个链表包含环，找出环的入口节点
+1：确定有没有环
+    定义2个指针，同时从头结点出发，一个一次走1步，一个一次走2步，如果走的快的指针追上走的慢的指针，
+    证明有环，如果走的快的指针走到结尾也没有追上慢的指针，则没环
+2：找到入口节点
+    同样用2个指针解决问题，定义两个这阵p、q，初始时指向头结点。如果链表的环中有n个节点，则指针p先向前
+    移动n步，然后两个指针以相同的速度向前移动。当第二个指针指向环的入口节点时，第一个指针已经绕着环走了一圈，
+    又回到了入口节点
+    接下来需要计算环中有几个节点，利用1中的节点，一边向前一边计数，直到再回到该节点，求出环中节点的个数
+ */
+class FindNodeInCircle{
+    ListNode meetingNode(ListNode head){//如果存在环，返回快慢两指针遇到的节点，若没有环，返回null
+        if (head == null)
+            return null;
+        ListNode slowNode = head.next;
+        if (slowNode == null)
+            return null;
+        ListNode fastNode = slowNode.next;
+        if (fastNode == null)
+            return null;
+        while (fastNode != null && slowNode != null){
+            if (fastNode == slowNode)
+                return fastNode;
+            slowNode = slowNode.next;
+            fastNode = fastNode.next;
+            if (fastNode != null){//走2步，通过这种方法解决空指针问题，如果一次走2步，可能存在空指针
+                fastNode = fastNode.next;
+            }
+        }
+        return null;
+    }
+    ListNode EntryNodeOfLoop(ListNode head){
+        ListNode meetNode = meetingNode(head);
+        if (meetNode == null)
+            return null;
+        int lengthOfLoop = 1;
+        ListNode tempNode = meetNode;
+        while (tempNode.next != meetNode){//求出环的长度
+            ++lengthOfLoop;
+            tempNode = tempNode.next;
+        }
+        tempNode = head;
+        for (int i = 0; i < lengthOfLoop; i++){
+            tempNode = tempNode.next;
+        }
+        ListNode listNode = head;
+        while (listNode != tempNode){//求环的入口
+            listNode = listNode.next;
+            tempNode = tempNode.next;
+        }
+        return listNode;
+    }
+}
+
+
+/*
+24：反转链表
+描述：定义一个函数，输入一个链表头结点，反转给量表并输出反转后链表的头结点
+ */
+class ReverseListNode{
+    ListNode reverse(ListNode head){
+        if (head == null)
+            return null;
+        ListNode pre = null;
+        ListNode tempNode;
+        while (head != null){
+            tempNode = head.next;
+            head.next = pre;
+            pre = head;
+            head = tempNode;
+        }
+        return pre;
+    }
+}
+
+
+/*
+25：合并两个排序的链表
+描述：输入两个递增排序的链表，合并这两个链表并使新链表中的节点仍然是排序的
+ */
+
+class MergeTwoListNode{
+    ListNode mergeListNodeRecur(ListNode head1, ListNode head2){
+        if (head1 == null)
+            return head2;
+        if (head2 == null)
+            return head1;
+        ListNode mergeHead = null;
+        if (head1.value < head2.value){
+            mergeHead = head1;
+            mergeHead.next = mergeListNodeRecur(head1.next, head2);
+        }else {
+            mergeHead = head2;
+            mergeHead.next = mergeListNodeRecur(head1, head2.next);
+        }
+        return mergeHead;
+    }
+
+    ListNode mergeListNodeNoRecur(ListNode head1, ListNode head2){
+        if (head1 == null)
+            return head2;
+        if (head2 == null)
+            return head1;
+        ListNode mergeHead = null;
+        if (head1.value < head2.value){
+            mergeHead = head1;
+            head1 = head1.next;
+        }else {
+            mergeHead = head2;
+            head2 = head2.next;
+        }
+        ListNode tempNode = mergeHead;
+        while (head1 != null && head2 != null){
+            if (head1.value < head2.value){
+                tempNode.next = head1;
+                tempNode = head1;
+                head1 = head1.next;
+            }else {
+                tempNode.next = head2;
+                tempNode = head2;
+                head2 = head2.next;
+            }
+        }
+        if (head1 == null)
+            tempNode.next = head2;
+        if (head2 == null)
+            tempNode.next = head1;
+        return mergeHead;
+    }
+}
+
+
+/*
+26：树的子结构
+描述：输入两棵二叉树A、B，判断B是不是A的子结构
+1：在树A中找到和树B的根节点的值一样的节点R
+2：判断树A中以R为根节点的子树是不是包含和树B一样的结构
+ */
+
+class IsSubTree{
+    boolean hasSubTree(BiTreeNode root1, BiTreeNode root2){
+        if (root1 == null)
+            return false;
+        if (root2 == null)
+            return true;
+        boolean result = false;
+        if (root1 != null && root2 != null){
+            if (isEqual(root1.value, root2.value))
+                result = isTree1HasTree2(root1, root2);
+            if (!result)
+                result = isTree1HasTree2(root1.left, root2);
+            if (!result)
+                result = isTree1HasTree2(root1.right, root2);
+        }
+        return result;
+    }
+    boolean isTree1HasTree2(BiTreeNode root1, BiTreeNode root2){
+        if (root2 == null)
+            return true;
+        if (root1 == null)
+            return false;
+        if (!isEqual(root1.value, root2.value)){
+            return false;
+        }
+        return isTree1HasTree2(root1.left,root2.left) &&
+                isTree1HasTree2(root1.right, root2.right);
+    }
+    boolean isEqual(double num1, double num2){
+        return Math.abs(num1 - num2) < 0.0000001;
+    }
+}
+
+
+/*
+27：二叉树的镜像
+描述：定义一个函数，输入一棵二叉树，该函数输出它的镜像
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
