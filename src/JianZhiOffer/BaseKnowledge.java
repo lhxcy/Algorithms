@@ -1847,7 +1847,7 @@ class IsPostOrder{
 从树的根节点开始往下一直到叶节点所经过的节点形成一条路径
  */
 class FindPathOfSumKInBiTree{
-    void findPath(BiTreeNode root, int sum){
+    void findPath(BiTreeNode root, int sum){//用数组实现
         int[] path = new int[getMaxDeepth(root)];
         findPathCore(root,sum,path,0);
     }
@@ -1889,6 +1889,33 @@ class FindPathOfSumKInBiTree{
         int right = 1 + getMaxDeepth(root.right);
         return Math.max(left,right);
     }
+
+    void findPathByQueue(BiTreeNode root, int sum){//用双向链表实现
+//        int[] path = new int[getMaxDeepth(root)];
+        LinkedList<Integer> path = new LinkedList<>();
+        findPathCoreByQueue(root,sum,path,0);
+    }
+    void findPathCoreByQueue(BiTreeNode root, int sum, LinkedList path, int currentSum){
+        if (root == null)
+            return;
+        path.addLast(root.value);
+        currentSum += root.value;
+        if ( root.left == null && root.right == null){
+            if (sum == currentSum){
+//                printPath(path,top);
+                for (Object x : path)
+                    System.out.print((int)x + " ");
+                System.out.println();
+            }
+        }else {
+            if (root.left != null)
+                findPathCoreByQueue(root.left, sum, path, currentSum);
+            if (root.right != null)
+                findPathCoreByQueue(root.right, sum, path, currentSum);
+        }
+        path.removeLast();
+    }
+
     public static void main(String[] args){
         BiTreeNode root1 = new BiTreeNode(10);
         BiTreeNode root2 = new BiTreeNode(5);
@@ -1900,12 +1927,14 @@ class FindPathOfSumKInBiTree{
         root2.left = root4;
         root2.right = root5;
         System.out.println(new FindPathOfSumKInBiTree().getMaxDeepth(root1));
-        new FindPathOfSumKInBiTree().findPath(root1,22);
+        new FindPathOfSumKInBiTree().findPathByQueue(root1,22);
     }
 }
 
 
-
+/*
+35：复杂链表的复制
+ */
 
 
 
