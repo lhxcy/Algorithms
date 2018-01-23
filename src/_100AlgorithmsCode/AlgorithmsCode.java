@@ -104,7 +104,7 @@ class MyMinStack{
     public int min(MinStack stack)throws Exception{
         if (stack.top == 0)
             throw new Exception("stack is empty！");
-        return stack.data[stack.top].min;
+        return stack.data[stack.top - 1].min;
     }
 
 }
@@ -135,32 +135,29 @@ class MaxOfSumInSubArray{
  */
 
 class FindPathInBiTree{
-    private int top = 0;
     public void findPath(BiTreeNode root, int sum){
         int[] path = new int[getMaxDepth(root)];
-        findPathCore(root,sum,path,this.top);
+        findPathCore(root,sum,path,0);
     }
     public void findPathCore(BiTreeNode root, int sum, int[] path, int top){
-        path[this.top++] = root.value;
-        sum -= sum - root.value;
+        path[top++] = root.value;
+        sum -= root.value;
         if (root.left == null && root.right == null){//到叶节点
-            if (sum == 0) printPath(path,this.top);
+            if (sum == 0) printPath(path,top);
         }else {
-            if (root.left != null) findPathCore(root.left, sum, path, this.top);
-            if (root.right != null) findPathCore(root.right, sum, path, this.top);
+            if (root.left != null) findPathCore(root.left, sum, path, top);
+            if (root.right != null) findPathCore(root.right, sum, path, top);
         }
-        --this.top;
-        sum += root.value;
 
     }
     public void printPath(int[] path, int top){
-        for (int i = 0; i <= this.top; i++){
+        for (int i = 0; i < top; i++){
             System.out.print(path[i] + '\t');
             System.out.println();
         }
     }
     // 获取最大深度
-    public static int getMaxDepth(BiTreeNode root) {
+    public  int getMaxDepth(BiTreeNode root) {
         if (root == null)
             return 0;
         else {

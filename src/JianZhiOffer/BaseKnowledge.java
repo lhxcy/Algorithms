@@ -1,7 +1,6 @@
 package JianZhiOffer;
 
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by XCY on 2017/12/19.
@@ -1508,24 +1507,402 @@ class MirrorOfBiTree{
     void mirrorRecur(BiTreeNode root){
         if(root == null || (root.left == null && root.right ==null))
             return;
+        BiTreeNode tempNode = root.left;
+        root.left = root.right;
+        root.right = tempNode;
+        if (root.left != null){
+            mirrorRecur(root.left);
+        }
+        if (root.right != null){
+            mirrorRecur(root.right);
+        }
+    }
+}
+
+/*
+28：对称的二叉树
+描述：实现函数判断二叉树是不是对称的。如果一棵二叉树和它的镜像是一样的，那么二叉树是对称的
+ */
+class BiTreeIsSymmetrical{
+    boolean isSymmetrical(BiTreeNode root){
+        return isSymmetricalCore(root,root);
+    }
+    boolean isSymmetricalCore(BiTreeNode root1, BiTreeNode root2){
+        if (root1 == null && root2 == null)
+            return true;
+        if (root1 == null || root2 == null)
+            return false;
+        if (root1.value != root2.value)
+            return false;
+        return isSymmetricalCore(root1.left, root2.left) &&
+                isSymmetricalCore(root1.right, root2.right);
+    }
+}
+
+
+/*
+29:顺时针打印矩阵
+描述：输入一个矩阵，按照从外向里以顺时针的顺序一次打印出每一个数字
+思路：定义一种遍历方式，先遍历父节点，再遍历它的右子节点，最后遍历左子节点，这种遍历方式称为 对称遍历算法
+可以通过比较二叉树的前序遍历序列和对称遍历序列来判断二叉树是否为对称的，如果两个序列一样，则为对称的，需要考虑null
+ */
+
+
+class PrintMatrix{
+    public static void main(String[] args){
+        int[][] mat = {{1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,16},{17,18,19,20}};
+        new PrintMatrix().printMatrixClockWisely(mat);
+    }
+    void printMatrixClockWisely(int[][] mat){
+        if (mat == null || mat[0] == null || mat.length <= 0 || mat[0].length <= 0)
+            return;
+//        int start = 0;//注释的是一种方法
+//        while (mat.length > start * 2 && mat[0].length > start * 2){
+//            printMatrixInCircle(mat, start);
+//            ++start;
+//        }
+        int lenRow = mat.length;//另一种写法
+        int lenCol = mat[0].length;
+        for (int start = 0; start < lenRow && start < lenCol; start++){
+            printMatrixInCircle(mat,start);
+            lenCol--;
+            lenRow--;
+        }
+    }
+    void printMatrixInCircle(int[][] mat, int start){
+        if (mat == null || mat[0] == null)
+            return;
+        int endRow = mat.length - 1 - start;//行
+        int endCol = mat[0].length - 1 - start;//列
+        //1:从左到右打印一行
+        for (int i = start; i <= endCol; i++){
+            int num = mat[start][i];
+            printNum(num);
+        }
+        //2:从上到下打印一列
+        if (endRow > start){
+            for (int i = start + 1; i <= endRow; i++){
+                int num = mat[i][endCol];
+                printNum(num);
+            }
+        }
+        //3:从右向左打印一行
+        if (endCol > start && endRow > start){
+            for (int i = endCol - 1; i >= start; i--){
+                int num = mat[endRow][i];
+                printNum(num);
+            }
+        }
+        //4:从下到上打印一列
+        if (start < endCol && start < endRow - 1){
+            for (int i = endRow - 1; i > start; i--){
+                int num = mat[i][start];
+                printNum(num);
+            }
+        }
+    }
+    void printNum(int x){
+        System.out.print(x + " ");
+    }
+}
+
+
+/*
+30：包含min的栈
+描述：定义栈的数据结构，子啊该类型上实现一个能够得到栈的最小元素的min函数
+ */
+
+class StackElement{
+    int value;
+    int min;
+}
+class MinStack{
+    StackElement[] stack;
+    int top;
+    int size;
+    private MinStack(){}
+    public static MinStack getMinStack(){return new MinStack();}
+}
+class MyMinStack{
+    public MinStack MyStackInit(){
+        MinStack minStack = MinStack.getMinStack();
+        minStack.stack = new StackElement[100];
+        minStack.top = 0;
+        minStack.size = 100;
+        return minStack;
+    }
+    void push(MinStack minStack,int value) throws Exception{
+        if (minStack.top > minStack.size)
+            throw new Exception("out of stack space");
+        minStack.stack[minStack.top].value = value;
+        minStack.stack[minStack.top].min = minStack.top ==0 ? value : minStack.stack[minStack.top - 1].min;
+        if (minStack.stack[minStack.top].min > value){
+            minStack.stack[minStack.top].min = value;
+        }
+        ++minStack.top;
+    }
+    public int pop(MinStack minStack) throws Exception{
+        if (minStack.top == 0)
+            throw new Exception("stack is empty");
+        return minStack.stack[--minStack.top].value;
+    }
+    public int min(MinStack minStack) throws Exception{
+        if (minStack.top == 0)
+            throw new Exception("stack is empty");
+        return minStack.stack[minStack.top - 1].min;
+    }
+}
+
+
+/*
+31：栈的压入、弹出序列
+描述：输入两个整数序列，第一个序列表示栈的压入序列，判断第二个是否为该栈的弹出序列。
+假设压入栈的所有数字都不同
+思路：建立一个辅助栈，把输入的序列一次压入辅助栈并按照第二个序列的顺序一次弹出序列
+ */
+
+class IsPopOrder{//默认长度一样
+    boolean isPopOrder(int[] first, int[] second, int length){
+        boolean possible = false;
+        if (first != null && second != null && length > 0){
+            Stack<Integer> stack = new Stack<>();
+            int pushIndex = 0;
+            int popIndex = 0;
+            while (popIndex < length){
+                while (stack.isEmpty() || stack.peek() != second[popIndex]){
+                    if (pushIndex == length)
+                        break;
+                    stack.push(first[pushIndex]);
+                    pushIndex++;
+                }
+                if (stack.peek() != second[popIndex])
+                    break;
+                stack.pop();
+                popIndex++;
+            }
+            if (stack.isEmpty() && popIndex == length)
+                possible = true;
+        }
+
+        return possible;
     }
 }
 
 
 
+/*
+32：从上往下打印二叉树
+描述：从上到下打印出二叉树的每一个节点，同一层，从左到右打印。即层次遍历二叉树
+ */
+
+class HierarchyPrintNodeOfBiTreeNode{
+    void printFromTopToBottom(BiTreeNode root){
+        if (root == null)
+            return;
+        Queue<BiTreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()){
+            BiTreeNode tempNode = queue.peek();
+            queue.poll();
+            System.out.print(tempNode.value + " ");
+            if (tempNode.left != null)
+                queue.add(tempNode.left);
+            if (tempNode.right != null)
+                queue.add(tempNode.right);
+        }
+    }
+}
+/*
+扩展1：分行从上到下打印二叉树
+描述：从上到下打印二叉树，同一层的节点按从左到右顺序打印，每一层打印一行
+思路：2个变量，一个表示下一层节点树，另一个表示再当前层中还没有打印的节点个数
+ */
+class PrintlnHierarchNodeOfBiTree{
+    void printlnNodeOfBiTree(BiTreeNode root){
+        if (root == null)
+            return;
+        Queue<BiTreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        int nextLevelCount = 0;
+        int currentCount = 1;
+        while (!queue.isEmpty()){
+            BiTreeNode tempNode = queue.peek();
+            System.out.print(tempNode.value + " ");
+            if (tempNode.left != null){
+                queue.add(tempNode.left);
+                nextLevelCount++;
+            }
+            if (tempNode.right != null){
+                queue.add(tempNode.right);
+                nextLevelCount++;
+            }
+            queue.poll();
+            --currentCount;
+            if (currentCount == 0){
+                currentCount = nextLevelCount;
+                nextLevelCount = 0;
+                System.out.println();
+            }
+        }
+    }
+}
+
+/*
+扩展2：之字形打印二叉树
+描述：实现函数按照之字形打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右到左打印，第三行从左到右打印
+思路：奇数层先保存左节点再保存右节点，偶数层先保存右节点再保存左节点，用双栈存储
+ */
+class ZigzagPrintOfBiTree{
+    public static void main(String[] args){
+        BiTreeNode root1 = new BiTreeNode(8);
+        BiTreeNode root2 = new BiTreeNode(6);
+        BiTreeNode root3 = new BiTreeNode(10);
+        BiTreeNode root4 = new BiTreeNode(5);
+        BiTreeNode root5 = new BiTreeNode(7);
+        BiTreeNode root6 = new BiTreeNode(9);
+        BiTreeNode root7 = new BiTreeNode(11);
+        root1.left = root2;
+        root1.right = root3;
+        root2.left = root4;
+        root2.right = root5;
+        root3.left = root6;
+        root3.right = root7;
+        new ZigzagPrintOfBiTree().zigzagPrint(root1);
+    }
+    void zigzagPrint(BiTreeNode root){
+        if (root == null)
+            return;
+        Stack<BiTreeNode> currentStack = new Stack<>();//偶数行存放
+        Stack<BiTreeNode> nextStack = new Stack<>();//奇数行存放
+        currentStack.push(root);
+        int level = 0;
+        while (!currentStack.isEmpty() || !nextStack.isEmpty()){
+            BiTreeNode tempNode = level == 0 ? currentStack.pop() : nextStack.pop();//也可以定义变量然后弹出，不过需要判断level的值
+            System.out.print(tempNode.value + " ");
+            if (level == 0){//偶数层
+                if (tempNode.left != null)
+                    nextStack.push(tempNode.left);
+                if (tempNode.right != null)
+                    nextStack.push(tempNode.right);
+            }else {//奇数层
+                if (tempNode.right != null)
+                    currentStack.push(tempNode.right);
+                if (tempNode.left != null)
+                    currentStack.push(tempNode.left);
+            }
+            if ((level == 0 && currentStack.isEmpty()) || (level == 1 && nextStack.isEmpty())){
+                System.out.println();
+                level = 1- level;
+            }
+        }
+    }
+}
 
 
 
+/*
+33：二叉搜索树的后续遍历序列
+描述：输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历结果，是返回true，不是返回false
+假设输入数组的任意两个数字都不相同
+思路：后续遍历中，最后一个为根节点的值，数组前面的数组可以分为2部分，小于根节点的为左子树，大于根节点的为右子树节点
+ */
+
+class IsPostOrder{
+    public static void main(String[] args){
+        int[] arr = {5,7,6,9,11,10,8};
+        System.out.println(new IsPostOrder().vertifyQuecenOfBST(arr,0,arr.length));
+    }
+    boolean vertifyQuecenOfBST(int[] arr, int start, int end){
+        if (arr == null || arr.length < 0)
+            return false;
+        int root = arr[end - 1];
+        int leftEndIndex = start;
+        //在二叉搜索树中左子树的节点小于根节点
+        for (; leftEndIndex < end; leftEndIndex++){
+            if (arr[leftEndIndex] > root) {
+                break;
+            }
+        }
+        //在二叉搜索树中右子树的节点大于根节点
+        int rightEndIndex = leftEndIndex;
+        for (; rightEndIndex < end; rightEndIndex++){
+            if (arr[rightEndIndex] < root)
+                return false;
+        }
+        boolean leftFlag = true;
+        if (leftEndIndex - 1 > start)//这里减一是因为上面循环中leftEndIndex在最后加了一，因此需要减去之后再做比较
+            leftFlag = vertifyQuecenOfBST(arr, start, leftEndIndex);
+        boolean  rightFlag = true;
+        if (rightEndIndex < end - 1)
+            rightFlag = vertifyQuecenOfBST(arr, leftEndIndex, rightEndIndex);
+        return (leftFlag && rightFlag);
+    }
+}
 
 
 
-
-
-
-
-
-
-
+/*
+34：二叉树中和为某值的路径
+描述：输入一棵二叉树和一个整数，打印出二叉树中节点值得和为输入整数的所有路径。
+从树的根节点开始往下一直到叶节点所经过的节点形成一条路径
+ */
+class FindPathOfSumKInBiTree{
+    void findPath(BiTreeNode root, int sum){
+        int[] path = new int[getMaxDeepth(root)];
+        findPathCore(root,sum,path,0);
+    }
+    void findPathCore(BiTreeNode root, int sum, int[] path, int top){
+        if (root == null)
+            return;
+        path[top++] = root.value;
+        sum -= root.value;
+        if ( root.left == null && root.right == null){
+            if (sum == 0){
+                printPath(path,top);
+                System.out.println();
+            }
+        }else {
+            if (root.left != null)
+                findPathCore(root.left, sum, path, top);
+            if (root.right != null)
+                findPathCore(root.right, sum, path, top);
+        }
+    }
+    void printPath(int[] path, int top){
+        for (int i = 0; i < top; i++){//因为存入时top已经加1
+            System.out.print(path[i] + " ");
+        }
+    }
+    int getMaxDeepth(BiTreeNode root){
+        if (root == null)
+            return 0;
+        else {
+            int left = getMaxDeepth(root.left);
+            int right = getMaxDeepth(root.right);
+            return 1 + Math.max(left,right);
+        }
+    }
+    int getMaxDeepth1(BiTreeNode root){
+        if (root == null)
+            return 0;
+        int left = 1 + getMaxDeepth(root.left);
+        int right = 1 + getMaxDeepth(root.right);
+        return Math.max(left,right);
+    }
+    public static void main(String[] args){
+        BiTreeNode root1 = new BiTreeNode(10);
+        BiTreeNode root2 = new BiTreeNode(5);
+        BiTreeNode root3 = new BiTreeNode(12);
+        BiTreeNode root4 = new BiTreeNode(4);
+        BiTreeNode root5 = new BiTreeNode(7);
+        root1.left = root2;
+        root1.right = root3;
+        root2.left = root4;
+        root2.right = root5;
+        System.out.println(new FindPathOfSumKInBiTree().getMaxDeepth(root1));
+        new FindPathOfSumKInBiTree().findPath(root1,22);
+    }
+}
 
 
 

@@ -1942,6 +1942,36 @@ class BTest extends ATest{
         System.out.println(string.toCharArray());
         int[] arr = {1,2};
         System.out.println(arr);
+    }
+}
 
+class IsStackOrderTest{
+    public static void main(String[] args){
+        int[] first = {1,2,3,4,5};
+        int[] second = {4,5,3,1,2};
+        System.out.println(new IsStackOrderTest().isOrder(first,second));
+    }
+    boolean isOrder(int[] first, int[] second){
+        boolean possible = false;
+        if (first != null && second != null && first.length == second.length && first.length > 0){
+            Stack<Integer> stack = new Stack<>();
+            int pushIndex = 0;
+            int popIndex = 0;
+            while (popIndex < second.length){
+                while (stack.isEmpty() || stack.peek() != second[popIndex]){
+                    if (pushIndex == first.length)
+                        break;
+                    stack.push(first[pushIndex]);
+                    pushIndex++;
+                }
+                if (stack.peek() != second[popIndex])
+                    break;
+                stack.pop();
+                ++popIndex;
+            }
+            if (stack.isEmpty() && popIndex == second.length)
+                possible = true;
+        }
+        return possible;
     }
 }
