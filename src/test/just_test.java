@@ -1996,7 +1996,7 @@ class ListNode{
     ListNode next;
 }
 class ObjectChange{
-    ListNode listNode;
+    ListNode listNode = new ListNode();
 }
 
 class TestObjectChange{

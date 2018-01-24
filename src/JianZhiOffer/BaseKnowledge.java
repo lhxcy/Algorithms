@@ -353,6 +353,7 @@ class BiTreeNode{
     public BiTreeNode right;
     public BiTreeNode parent;
     public BiTreeNode(int value){this.value = value;}
+    public BiTreeNode(){}
 
 }
 //递归
@@ -2002,7 +2003,7 @@ class CopyComplexListNode{
 描述：输入一个二叉搜索树，将该二叉搜索树转换成一个排序的双向链表，要求不能创建任何新节点，只能调整树中指针的指向
  */
 class PackBiTreeNode{
-    BiTreeNode btnode = null;
+    BiTreeNode btnode =null;
 }
 class BiTree2BiList{
     public static void main(String[] args){
@@ -2021,11 +2022,11 @@ class BiTree2BiList{
 //            head = head.right;
 //    }
         BiTreeNode head1 = new BiTree2BiList().convert1(root1);
-        System.out.println(head1.value);
-//        while (head1 != null){
-//            System.out.print(head1.value + " ");
-//            head1 = head1.right;
-//        }
+//        System.out.println(head1.value);
+        while (head1 != null){
+            System.out.print(head1.value + " ");
+            head1 = head1.right;
+        }
 
     }
     BiTreeNode convert(BiTreeNode root){
@@ -2052,15 +2053,15 @@ class BiTree2BiList{
         return lastNode;
     }
     BiTreeNode convert1(BiTreeNode root){
-        PackBiTreeNode head = null;
-        PackBiTreeNode tail = null;
+        PackBiTreeNode head = new PackBiTreeNode();
+        PackBiTreeNode tail = new PackBiTreeNode();
         convertCore3(root, head, tail);
 //        convertCore2(root, head, tail);
         return head.btnode;
     }
 
     void convertCore3(BiTreeNode root, PackBiTreeNode head, PackBiTreeNode tail){
-        PackBiTreeNode leftNode = null, rightNode = null;
+        PackBiTreeNode leftNode = new PackBiTreeNode(), rightNode = new PackBiTreeNode();
         if (root == null){
             head = null;
             tail = null;
@@ -2069,7 +2070,7 @@ class BiTree2BiList{
         System.out.println(root.value + " root value");
         convertCore3(root.left, head,leftNode);
         convertCore3(root.right,rightNode,tail);
-        if (leftNode != null){
+        if (leftNode.btnode != null){
             leftNode.btnode.right = root;
             root.left = leftNode.btnode;
         }else {
@@ -2078,7 +2079,7 @@ class BiTree2BiList{
             System.out.println(root.value);
             System.out.println(head.btnode.value);
         }
-        if (rightNode != null){
+        if (rightNode.btnode != null){
             root.right = rightNode.btnode;
             rightNode.btnode.left = root;
         }else {
@@ -2087,33 +2088,7 @@ class BiTree2BiList{
         }
     }
 
-    void convertCore2(BiTreeNode root, BiTreeNode head, BiTreeNode tail){
-        BiTreeNode leftNode = null, rightNode = null;
-        if (root == null){
-            head = null;
-            tail = null;
-            return;
-        }
-//        System.out.println(root.value + " root value");
-        convertCore2(root.left, head,leftNode);
-        convertCore2(root.right,rightNode,tail);
-        if (leftNode != null){
-            leftNode.right = root;
-            root.left = leftNode;
-        }else {
-            System.out.println("head change");
-            head = root;
-            System.out.println(root.value);
-            System.out.println(head.value);
-        }
-        if (rightNode != null){
-            root.right = rightNode;
-            rightNode.left = root;
-        }else {
-//            System.out.println("tail change");
-            tail = root;
-        }
-    }
+
 }
 
 
