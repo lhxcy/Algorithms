@@ -1991,8 +1991,28 @@ class TestQueue{
     }
 
 }
+class ListNode{
+    int value;
+    ListNode next;
+}
+class ObjectChange{
+    ListNode listNode;
+}
 
+class TestObjectChange{
+    void Recur(ObjectChange objectChange){
+        if(objectChange.listNode.value == 10)
+            return;
+        System.out.print(objectChange.listNode.value++ + " ");
+        Recur(objectChange);
+    }
+    public static void main(String[] args){
+        ObjectChange objectChange = new ObjectChange();
+        new TestObjectChange().Recur(objectChange);
+        System.out.println(objectChange.listNode.value);
+    }
 
+}
 
 
 

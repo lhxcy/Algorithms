@@ -28,34 +28,15 @@ class BiTreeNode{
 /*
 1：将二叉搜索树转换为双向链表
  */
-class _01_BiSearchTree2BiList{
-    public BiTreeNode convertTo(BiTreeNode root){
-        BiTreeNode head = null,tail = null;
-        return head;
-    }
-    public void convertCore(BiTreeNode head, BiTreeNode tail, BiTreeNode root){
-        BiTreeNode leftH = null,rightH = null;
-        if (root == null){
-            head = null;
-            tail = null;
-            return;
-        }
-        convertCore(head,leftH,root.left);//leftH会在递归中改变，（可以等于叶节点）
-        convertCore(rightH,tail,root.right);
-        if (leftH != null){
-            leftH.right = root;
-            root.left = leftH;
-        }else {
-            head = root;
-        }
-        if (rightH != null){
-            rightH.left = root;
-            root.right = rightH;
-        }else {
-            tail =root;
-        }
-    }
-}
+//class _01_BiSearchTree2BiList{
+//    BiTreeNode convert(BiTreeNode root){
+//
+//    }
+//    BiTreeNode convertCore(BiTreeNode head, BiTreeNode lastNode){
+//        if (head == null)
+//            return lastNode;
+//    }
+//}
 
 
 /*

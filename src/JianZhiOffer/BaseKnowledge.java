@@ -1,5 +1,7 @@
 package JianZhiOffer;
 
+import com.sun.org.apache.xalan.internal.xsltc.dom.SimpleResultTreeImpl;
+
 import java.util.*;
 
 /**
@@ -1934,15 +1936,213 @@ class FindPathOfSumKInBiTree{
 
 /*
 35：复杂链表的复制
+描述：设计函数复制复杂链表，在复杂链表中，每个节点除了又有next指针外，还有sibling指针，指向链表中任意节点或null
+ */
+class ComplexListNode{
+    int value;
+    ComplexListNode next;
+    ComplexListNode sibling;
+}
+class CopyComplexListNode{
+    void cloneNode(ComplexListNode head){//复制节点，并连接
+        ComplexListNode node = head;
+        if (head == null)
+            return;
+        while (node != null){
+            ComplexListNode cloneNode = new ComplexListNode();
+            cloneNode.value = node.value;
+            cloneNode.next = node.next;
+            cloneNode.sibling = null;
+            node.next = cloneNode;
+            node = cloneNode.next;
+        }
+    }
+    void connectSiblingNode(ComplexListNode head){//复制sibling
+        if (head == null)
+            return;
+        ComplexListNode tempNode = head;
+        while (tempNode != null){
+            ComplexListNode cloneNode = tempNode.next;
+            if (tempNode.sibling != null){
+                cloneNode.sibling = tempNode.sibling;
+            }
+            tempNode = cloneNode.next;
+        }
+    }
+    ComplexListNode reConnectNode(ComplexListNode head){//拆分
+        ComplexListNode cloneHeadNode = null;
+        ComplexListNode cloneTempNode = null;
+        ComplexListNode tempNode = head;
+        if (tempNode != null){
+            cloneHeadNode = cloneTempNode = head.next;
+            tempNode.next = cloneTempNode.next;
+            tempNode = tempNode.next;
+        }
+        while (tempNode != null){
+            cloneTempNode.next = tempNode.next;
+            cloneTempNode = cloneTempNode.next;
+            tempNode.next = cloneTempNode.next;
+            tempNode = tempNode.next;
+        }
+        return cloneHeadNode;
+    }
+
+    ComplexListNode clone(ComplexListNode head){
+        if (head == null)
+            return null;
+        cloneNode(head);
+        connectSiblingNode(head);
+        return reConnectNode(head);
+    }
+}
+
+
+/*
+36：二叉搜索树与双向链表
+描述：输入一个二叉搜索树，将该二叉搜索树转换成一个排序的双向链表，要求不能创建任何新节点，只能调整树中指针的指向
+ */
+class PackBiTreeNode{
+    BiTreeNode btnode = null;
+}
+class BiTree2BiList{
+    public static void main(String[] args){
+        BiTreeNode root1 = new BiTreeNode(10);
+        BiTreeNode root2 = new BiTreeNode(5);
+        BiTreeNode root3 = new BiTreeNode(12);
+        BiTreeNode root4 = new BiTreeNode(4);
+        BiTreeNode root5 = new BiTreeNode(7);
+        root1.left = root2;
+        root1.right = root3;
+        root2.left = root4;
+        root2.right = root5;
+//        BiTreeNode head = new BiTree2BiList().convert(root1);
+//        while (head != null){
+//            System.out.print(head.value + " ");
+//            head = head.right;
+//    }
+        BiTreeNode head1 = new BiTree2BiList().convert1(root1);
+        System.out.println(head1.value);
+//        while (head1 != null){
+//            System.out.print(head1.value + " ");
+//            head1 = head1.right;
+//        }
+
+    }
+    BiTreeNode convert(BiTreeNode root){
+        BiTreeNode lastNode = null;
+        lastNode = convertCore(root, lastNode);
+        BiTreeNode head = lastNode;
+//        System.out.println(head.value);
+        while (head.left != null){
+            head = head.left;
+        }
+        return head;
+    }
+    BiTreeNode convertCore(BiTreeNode root, BiTreeNode lastNode){//lastNode来保存最后一个结点的指针，以便在与根结点连续时使用
+        if (root == null)
+            return lastNode;
+        BiTreeNode currentNode = root;
+        if (currentNode.left != null)
+            lastNode = convertCore(root.left, lastNode);
+        currentNode.left = lastNode;
+        if (lastNode != null) lastNode.right = currentNode;
+        lastNode = currentNode;
+        if (currentNode.right != null)
+            lastNode = convertCore(root.right, lastNode);
+        return lastNode;
+    }
+    BiTreeNode convert1(BiTreeNode root){
+        PackBiTreeNode head = null;
+        PackBiTreeNode tail = null;
+        convertCore3(root, head, tail);
+//        convertCore2(root, head, tail);
+        return head.btnode;
+    }
+
+    void convertCore3(BiTreeNode root, PackBiTreeNode head, PackBiTreeNode tail){
+        PackBiTreeNode leftNode = null, rightNode = null;
+        if (root == null){
+            head = null;
+            tail = null;
+            return;
+        }
+        System.out.println(root.value + " root value");
+        convertCore3(root.left, head,leftNode);
+        convertCore3(root.right,rightNode,tail);
+        if (leftNode != null){
+            leftNode.btnode.right = root;
+            root.left = leftNode.btnode;
+        }else {
+            System.out.println("head change");
+            head.btnode = root;
+            System.out.println(root.value);
+            System.out.println(head.btnode.value);
+        }
+        if (rightNode != null){
+            root.right = rightNode.btnode;
+            rightNode.btnode.left = root;
+        }else {
+//            System.out.println("tail change");
+            tail.btnode = root;
+        }
+    }
+
+    void convertCore2(BiTreeNode root, BiTreeNode head, BiTreeNode tail){
+        BiTreeNode leftNode = null, rightNode = null;
+        if (root == null){
+            head = null;
+            tail = null;
+            return;
+        }
+//        System.out.println(root.value + " root value");
+        convertCore2(root.left, head,leftNode);
+        convertCore2(root.right,rightNode,tail);
+        if (leftNode != null){
+            leftNode.right = root;
+            root.left = leftNode;
+        }else {
+            System.out.println("head change");
+            head = root;
+            System.out.println(root.value);
+            System.out.println(head.value);
+        }
+        if (rightNode != null){
+            root.right = rightNode;
+            rightNode.left = root;
+        }else {
+//            System.out.println("tail change");
+            tail = root;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+37：序列化二叉树
  */
 
 
-
-
-
-
-
-
+/*
+38：字符串的排列
+ */
 
 
 
