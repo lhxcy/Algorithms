@@ -2031,7 +2031,7 @@ class BiTree2BiList{
     }
     BiTreeNode convert(BiTreeNode root){
         BiTreeNode lastNode = null;
-        lastNode = convertCore(root, lastNode);
+        lastNode = convertCore(root, null);
         BiTreeNode head = lastNode;
 //        System.out.println(head.value);
         while (head.left != null){
@@ -2055,21 +2055,19 @@ class BiTree2BiList{
     BiTreeNode convert1(BiTreeNode root){
         PackBiTreeNode head = new PackBiTreeNode();
         PackBiTreeNode tail = new PackBiTreeNode();
-        convertCore3(root, head, tail);
+        convertCore1(root, head, tail);
 //        convertCore2(root, head, tail);
         return head.btnode;
     }
 
-    void convertCore3(BiTreeNode root, PackBiTreeNode head, PackBiTreeNode tail){
+    void convertCore1(BiTreeNode root, PackBiTreeNode head, PackBiTreeNode tail){
         PackBiTreeNode leftNode = new PackBiTreeNode(), rightNode = new PackBiTreeNode();
         if (root == null){
-            head = null;
-            tail = null;
             return;
         }
         System.out.println(root.value + " root value");
-        convertCore3(root.left, head,leftNode);
-        convertCore3(root.right,rightNode,tail);
+        convertCore1(root.left, head,leftNode);
+        convertCore1(root.right,rightNode,tail);
         if (leftNode.btnode != null){
             leftNode.btnode.right = root;
             root.left = leftNode.btnode;
@@ -2087,32 +2085,58 @@ class BiTree2BiList{
             tail.btnode = root;
         }
     }
+}
 
 
+/*
+37：序列化二叉树
+描述：实现两个函数，分别用来序列化和反序列化二叉树
+思路：通过前序遍历，将null指针堪为特殊字符$
+ */
+
+class SerializeAndDeSerializeBiTree{
+    int index = -1;
+    String serialize(BiTreeNode root){
+        StringBuilder stringBuilder = new StringBuilder();
+        if (root == null){
+            stringBuilder.append("&,");
+            return stringBuilder.toString();
+        }
+        stringBuilder.append(root.value);
+        stringBuilder.append(",");
+        stringBuilder.append(serialize(root.left));
+        stringBuilder.append(serialize(root.right));
+        return stringBuilder.toString();
+    }
+    BiTreeNode deSerialize(String string){
+        index++;
+        String[] strs = string.split(",");
+        BiTreeNode root = null;
+        if (strs[index] != "$"){
+            root = new BiTreeNode(Integer.parseInt(strs[index]));
+            root.left = deSerialize(string);
+            root.right = deSerialize(string);
+        }
+        return root;
+    }
+    public static void main(String[] args){
+        BiTreeNode root1 = new BiTreeNode(10);
+        BiTreeNode root2 = new BiTreeNode(5);
+        BiTreeNode root3 = new BiTreeNode(12);
+        BiTreeNode root4 = new BiTreeNode(4);
+        BiTreeNode root5 = new BiTreeNode(7);
+        root1.left = root2;
+        root1.right = root3;
+        root2.left = root4;
+        root2.right = root5;
+        System.out.println(new SerializeAndDeSerializeBiTree().serialize(root1));
+    }
 }
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-37：序列化二叉树
- */
 
 
 /*
