@@ -2072,10 +2072,10 @@ class BiTree2BiList{
             leftNode.btnode.right = root;
             root.left = leftNode.btnode;
         }else {
-            System.out.println("head change");
+//            System.out.println("head change");
             head.btnode = root;
-            System.out.println(root.value);
-            System.out.println(head.btnode.value);
+//            System.out.println(root.value);
+//            System.out.println(head.btnode.value);
         }
         if (rightNode.btnode != null){
             root.right = rightNode.btnode;
@@ -2134,14 +2134,52 @@ class SerializeAndDeSerializeBiTree{
 }
 
 
-
-
-
-
-
 /*
 38：字符串的排列
+描述：输入一个字符串，打印出该字符串中字符的所有排列，即全排列
  */
+
+class PermutationsOfString{
+    void permutations(String str){
+        char[] chs = str.toCharArray();
+        permutationsCore(chs, 0);
+    }
+    void permutationsCore(char[] chs, int index){
+        if (index >= chs.length){
+            print(chs);
+            return;
+        }
+        for (int m = index; m < chs.length; m++){
+            swap(chs, index, m);
+            permutationsCore(chs, index + 1);
+            swap(chs, index, m);
+        }
+    }
+    void print(char[] chs){
+        for (char c : chs){
+            System.out.print(c);
+        }
+        System.out.println();
+    }
+    void swap(char[] chs, int i, int j){
+        char temp = chs[i];
+        chs[i] = chs[j];
+        chs[j] = temp;
+    }
+    public static void main(String[] args){
+        String str = "abc";
+        new PermutationsOfString().permutations(str);
+    }
+}
+
+
+
+
+
+
+
+
+
 
 
 
