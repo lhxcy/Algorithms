@@ -7,6 +7,13 @@ import java.util.*;
 /**
  * Created by XCY on 2017/12/19.
  */
+class SwapArray{
+    public static void swap(int[] arr, int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
 public class BaseKnowledge {
 }
 //2 实现single模式
@@ -2173,10 +2180,229 @@ class PermutationsOfString{
 }
 
 
+/*
+39：数组中出现次数超过一半的数字
+描述：数组中有一个数字出现的次数超过数字长度的一半，请找出这个数字。
+ */
+
+class FindMainNumber{
+    int findNumber(int[] arr){
+        int ans = arr[0];
+        int count = 1;
+        for (int i = 1; i < arr.length; i++){
+            if (arr[i] != ans){
+                if (count == 1) ans = arr[i];
+                else --count;
+            }
+            else ++count;
+        }
+        if (!checkMoreThanHalf(arr, ans)) return -1;
+        return ans;
+    }
+    int findNumber1(int[] arr){//基于Partition函数的时间复杂度为O(n)的算法,但是改变了数组
+        if (arr == null || arr.length < 0)
+            return -1;
+        int middle = arr.length >> 1;
+        int start = 0;
+        int end = arr.length - 1;
+        int index = partition(arr, start, end);
+        while (index != middle){
+            if (index > middle){
+                end = index - 1;
+                index = partition(arr, start, end);
+            }else {
+                start = index + 1;
+                index = partition(arr,start, end);
+            }
+        }
+        int ans = arr[middle];
+        if (!checkMoreThanHalf(arr, ans))
+            return -1;
+        return ans;
+
+    }
+    int partition(int[] arr, int start, int end){
+        if (arr == null || arr.length <= 0 || start < 0 || end >= arr.length)
+            return -1;
+        Random random = new Random();
+        int index = (int)random.nextDouble()*(end - start);
+        swap(arr, index,end);
+        int small = start - 1;
+        for (index = start; index < end; index++){
+            if (arr[index] < arr[end]){
+                ++small;
+                if (small != index){
+                    swap(arr, small, index);
+                }
+            }
+        }
+        ++small;
+        swap(arr, index, end);
+        return small;
+    }
+    void swap(int[] arr, int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    boolean checkMoreThanHalf(int[] arr, int num){
+        int times = 0;
+        for (int i = 0; i < arr.length; i++){
+            if (arr[i] == num) ++times;
+        }
+        boolean isMoreThanHalf = true;
+        if (times * 2 <= arr.length)
+            isMoreThanHalf = false;
+        return isMoreThanHalf;
+    }
+    public static void main(String[] args){
+        int[] arr = {1,2,3,2,2,2,5,4,2};
+        System.out.println(new FindMainNumber().findNumber1(arr));
+    }
+}
 
 
+/*
+40：最小的K个数
+描述：输入n个整数，找出其中最小的k个数
+ */
+class FindMinNumberOfK{
+    //方法一：小顶堆 修改了原数组 时间复杂度O(nlog(n))
+    void buildMinTree(int[] arr){
+        for (int i = arr.length / 2 - 1; i >= 0; i--){
+            buildMinTreeCore(arr,i,arr.length);
+        }
+    }
+    void buildMinTreeCore(int[] arr, int index, int buildLength){
+        int leftChildrenIndex = findLeftChildren(index);
+        int rightChildrenIndex = findRightChildren(index);
+        int minIndex = index;
+        if (leftChildrenIndex < buildLength && arr[minIndex] > arr[leftChildrenIndex]){
+            minIndex = leftChildrenIndex;
+        }
+        if (rightChildrenIndex < buildLength && arr[minIndex] > arr[rightChildrenIndex]){
+            minIndex = rightChildrenIndex;
+        }
+        if (minIndex == index || minIndex > buildLength)
+            return;
+        swap(arr,minIndex,index);
+        buildMinTreeCore(arr, minIndex,buildLength);
+    }
+    int findRightChildren(int i){ return 2 * (i + 1);}
+    int findLeftChildren(int i){ return 2 * i + 1;}
+    void heapSort(int[] arr){
+        for (int i = 0; i < arr.length; i++){
+            swap(arr,0,arr.length-i-1);
+            buildMinTreeCore(arr,0, arr.length - i - 1);
+        }
+    }
+    void swap(int[] arr, int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    void findKMinNum(int[] arr,int k){
+        this.buildMinTree(arr);
+        this.heapSort(arr);
+        int index = arr.length;
+        for (int i = 0; i < k; i++)
+            System.out.print(arr[--index] + " ");
+    }
 
+    //方法二 基于partition 改变数组
+    //如果基于数组的第k个数字来调整，则使得比第k个数字小的所有数字都位于数组的左边
+    void findKMinNum1(int[] arr, int k){
+        if (arr == null || arr.length == 0 || k > arr.length || k < 0)
+            return;
+        int start = 0;
+        int end = arr.length - 1;
+        int index = partition(arr,start, end);
+        while (index != k - 1){
+            if (index > k - 1){
+                end = index - 1;
+                index = partition(arr, start,end);
+            }else {
+                start = index + 1;
+                index = partition(arr, start, end);
+            }
+        }
+        for (int s : arr)
+            System.out.print(s + " ");
+        System.out.println();
+        for (int i = 0; i < k; i++)
+            System.out.println(arr[i] + "  ");
+    }
+    int partition(int[] arr, int start, int end){
+        if (arr == null || start < 0 || end > arr.length || arr.length == 0)
+            return -1;
+        Random random = new Random();
+        int index = (int)random.nextDouble() * (end - start);
+        swap(arr,index,end);
+        int small = start - 1;
+        for (index = start; index < end; index++){
+            if (arr[index] < arr[end]){
+                ++small;
+                if (small != index){
+                    swap(arr, small, index);
+                }
+            }
+        }
+        ++small;
+        swap(arr, small, end);
+        return small;
+    }
 
+    //方法三 设计容量为K的大顶堆存储最小K个数，然后来一个数与大顶堆最大值比较，如果小，更新一下大顶堆
+    class MaxHeap{
+        void buildMaxTree(int[] arr){
+            for (int i = arr.length / 2 - 1; i >= 0; i--){
+                buildMaxTreeCore(arr,i,arr.length);
+            }
+        }
+        void buildMaxTreeCore(int[] arr, int index, int buildLength){
+            int leftChildrenIndex = findLeftChildren(index);
+            int rightChildrenIndex = findRightChildren(index);
+            int maxIndex = index;
+            if (leftChildrenIndex < buildLength && arr[maxIndex] < arr[leftChildrenIndex]){
+                maxIndex = leftChildrenIndex;
+            }
+            if (rightChildrenIndex < buildLength && arr[maxIndex] < arr[rightChildrenIndex]){
+                maxIndex = rightChildrenIndex;
+            }
+            if (maxIndex == index || maxIndex > buildLength)
+                return;
+            swap(arr,maxIndex,index);
+            buildMaxTreeCore(arr, maxIndex,buildLength);
+        }
+        void insert(int[] arr, int value){
+            arr[0] = value;
+            buildMaxTreeCore(arr,0,arr.length - 1);
+        }
+    }
+    void findKMinNum2(int[] arr, int k){
+        if (arr == null || arr.length <=0 || arr.length < k)
+            return;
+        int[] tempArr = new int[k];
+        for (int i = 0;i < k; i++)
+            tempArr[i] = arr[i];
+        MaxHeap maxHeap = new MaxHeap();
+        maxHeap.buildMaxTree(tempArr);
+        for (int i = k; i < arr.length; i++){
+            if (arr[i] < tempArr[0]){
+                maxHeap.insert(tempArr, arr[i]);
+            }
+        }
+        for (int t : tempArr)
+            System.out.print(t + " ");
+        System.out.println();
+    }
+    public static void main(String[] args){
+        int[] arr = {4,5,1,6,2,7,3,8};
+//        new FindMinNumberOfK().findKMinNum(arr,4);
+//        new FindMinNumberOfK().findKMinNum1(arr,4);
+        new FindMinNumberOfK().findKMinNum2(arr,4);
+    }
+}
 
 
 
