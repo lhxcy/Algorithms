@@ -1,8 +1,10 @@
 package JianZhiOffer;
 
+import ZuoChengYun_exercise._40_reverseList;
 import com.sun.org.apache.xalan.internal.xsltc.dom.SimpleResultTreeImpl;
 
 import java.util.*;
+import java.util.concurrent.Executor;
 
 /**
  * Created by XCY on 2017/12/19.
@@ -2405,20 +2407,175 @@ class FindMinNumberOfK{
 }
 
 
+/*
+41：数据流中的中位数
+描述：如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。
+如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间那两个数的平均值。
+
+基础：如果能够保证数据容器左边的数据小于右边的数据，那么即使左、右两边内部的数据没有排序，
+也可以根据左边最大的数以及右边最小的数得到中位数
+
+思路：考虑将数据序列从中间开始分为两个部分，左边部分使用大根堆表示，右边部分使用小根堆存储。
+每遍历一个数据，计数器count增加1，当count是偶数时，将数据插入小根堆；
+当count是奇数时，将数据插入大根堆。当所有数据遍历插入完成后（时间复杂度为O(logn)，
+如果count最后为偶数，则中位数为大根堆堆顶元素和小根堆堆顶元素和的一半；
+如果count最后为奇数，则中位数为小根堆堆顶元素。
+ */
+
+class GetMedianNumberInIOStream{
+    private int count = 0;//数据流中数据的个数
+    //优先队列实现了堆，默认实现的小顶堆
+    private PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+    private PriorityQueue<Integer> maxHeap = new PriorityQueue<Integer>(15, new Comparator<Integer>() {
+        @Override
+        public int compare(Integer o1, Integer o2) {
+            return o2 - o1;//o1 - o2是小顶堆
+        }
+    });
+    public void insert(int num){
+        if ((count & 0x1) == 0){//当数据总数为偶数时，新加入的元素应进入小顶堆
+                                //（注意不是直接进入小顶堆，是经过大顶堆筛选后选取大顶堆中最大元素进入小顶堆
+                                //1：新加入的元素先加入大顶堆，有大顶堆筛选后选出最大元素
+            maxHeap.offer(num);
+            int filterMaxNum = maxHeap.poll();
+            minHeap.offer(filterMaxNum);
+        }else {             //当数据总数为奇数时，新加入的元素应进入大顶堆
+                            //（注意不是直接进入大顶堆，是经过小顶堆筛选后选取小顶堆中最小元素进入大顶堆
+                            //1：新加入的元素先加入小顶堆，有小顶堆筛选后选出最小元素
+            minHeap.offer(num);
+            int filterMinNum = minHeap.poll();
+            maxHeap.offer(filterMinNum);
+        }
+        ++count;
+    }
+    public Double getMedian(){
+        // 数目为偶数时，中位数为小根堆堆顶元素与大根堆堆顶元素和的一半
+        if ((count & 0x1) == 0){
+            return (minHeap.peek() + maxHeap.peek()) / 2.0;
+        }else {
+            return new Double(maxHeap.peek());
+        }
+    }
+}
 
 
 
+/*
+42：连续子数组的最大和
+描述：输入一个整型数组，数组中有正有负，数组中的一个或连续多个整数组成一个子数组。
+求所有子数组的和的最大值，要求时间复杂对O(n)
+ */
+
+class MaxSumOfSubArray{
+    int findMaxSum(int[] arr) throws Exception{
+        if (arr == null || arr.length <= 0)
+            throw new Exception("the array your Input is error");
+        int maxSum = 0;
+        int ans = 0;
+        for (int i = 0; i < arr.length; i++){
+            maxSum += arr[i];
+            if (maxSum < 0){
+                maxSum = 0;
+            }else {
+                if (maxSum > ans){
+                    ans = maxSum;
+                }
+            }
+        }
+        return ans;
+    }
+    public static void main(String[] args) throws Exception{
+        int[] arr = {1,-2,3,10,-4,7,2,-5};
+        System.out.println(new MaxSumOfSubArray().findMaxSum(arr));
+    }
+}
 
 
+/*
+43：(1--n)整数中 1 出现的次数
+描述：输入一个整数n，求 1--n这n个整数的十进制表示中 1 出现的次数
+ */
+class NumOf1{
+    //方法一 暴力枚举 时间复杂度O(nlog(n))
+    int numberOf1(int n){
+        int number = 0;
+        for (int i = 1; i <= n; i++)
+            number += numberOf1Core(i);
+        return number;
+    }
+    int numberOf1Core(int i){
+        int number = 0;
+        while (i != 0){
+            if (i % 10 == 1)
+                ++number;
+            i = i / 10;
+        }
+        return number;
+    }
+
+    //方法二 通过统计的思想去做
+    //例如：21345 分为 1346 - 21345 和 1 - 1345两块。1346 - 21345中 1 出现在万位上是 10000 - 19999 一万次
+    //10000 - 12345 1 出现在万位上次数 为 （12345-10000+1） = 2346
+    //再看剩下的四位 1346 - 21345 分为 1346 - 11345 ， 11346 - 21345两部分，剩下的每一段中的4位数，选择其中一位为1，
+    //其他随便，总共 2 * 4 * 10^3 = 8000
+    //剩下的 1-1345用递归
+
+    int numberOf11(int n){
+        if (n <= 0)
+            return 0;
+        char[] strN = (n + "").toCharArray();
+        return numberOf1Core1(strN,0);
+    }
+
+    int numberOf1Core1(char[] strN, int startIndex){
+        if (strN == null || strN[startIndex] < '0' || strN[startIndex] > '9' || strN.length == startIndex)
+            return 0;
+        int first = strN[startIndex] - '0';
+        int length = strN.length - startIndex;
+        if (length == 1 && first == 0) return 0;
+        if (length == 1 && first > 0) return 1;
+        //假设strN是“21345”
+        //numFirstDigit 是数字10000 - 19999的第一位中的数目
+        int numFirstDigit = 0;
+        if (first > 1)
+            numFirstDigit = PowerBase10(length - 1);
+        else if (first == 1)
+            numFirstDigit = getNum(strN,startIndex + 1);//求解10000 - 12345 1 出现在万位上次数 为 （12345-10000+1） = 2346
+        int numOtherDigits = first * (length - 1) * PowerBase10(length - 2);//计算1346 - 21345 中除第一位外数位中1的次数
+        int numRecursive = numberOf1Core1(strN, startIndex + 1);
+        System.out.println(startIndex + " numFirstDigit " + numFirstDigit);
+        System.out.println(startIndex + " numOtherDigits " + numOtherDigits);
+        System.out.println(startIndex + " numRecursive " + numRecursive);
+        return numFirstDigit + numOtherDigits + numRecursive;
+    }
+
+    int getNum(char[] strN, int startIndex){//求解10000 - 12345 1 出现在万位上次数 为 （12345-10000+1） = 2346
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = startIndex; i < strN.length; i++)
+            stringBuilder.append(strN[i]);
+        System.out.println(stringBuilder.toString());
+        return Integer.valueOf(stringBuilder.toString()) + 1;
+    }
+
+    int PowerBase10(int n){
+        System.out.println(n);
+        int result = 1;
+        for (int i = 0; i < n; i++)
+            result *= 10;
+        return result;
+    }
+
+    public static void main(String[] args){
+        int n = 21345;
+        System.out.println(new NumOf1().numberOf1(n));
+        System.out.println(new NumOf1().numberOf11(n));
+    }
+}
 
 
-
-
-
-
-
-
-
+/*
+44：数字序列中某一位的数字
+ */
 
 
 
