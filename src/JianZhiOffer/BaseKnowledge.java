@@ -10,8 +10,8 @@ import java.util.concurrent.Executor;
  * Created by XCY on 2017/12/19.
  */
 class SwapArray{
-    public static void swap(int[] arr, int i, int j){
-        int temp = arr[i];
+    public static void swap(Object[] arr, int i, int j){
+        Object temp = arr[i];
         arr[i] = arr[j];
         arr[j] = temp;
     }
@@ -2576,12 +2576,126 @@ class NumOf1{
 
 /*
 44：数字序列中某一位的数字
-
+描述：数字以 0123456789101112131415。。。的格式序列化到字符序列中。在这个序列中，第5位（从0开始）是5，第13位是 1 ，
+第19位是4，等等，编写函数，求任意第n位对应的数字
+思路：第一种方法 暴力破解 枚举
+    第二种方法：例如 第1001位， 序列前10位 0 - 9 这10个数字只有 1 位，显然 1001在这之后，因此直接跳过这10个数字
+                接下来从后面紧跟的序列中找第991（1001 - 10 = 991）位。后面的180位数字是90个10 - 99 两位数，由于
+                991 > 180，所以跳过90个两位数，接下来的2700位是 900 个 100 - 999 三位数，由于 811（991 - 180） < 2700,
+                所以第811位一定是某个三位数中1位，又因为 811 = 3 * 270 +1，这以为着第811位是从100开始的第270个数字即
+                370的中间一位，也就是7（因为是从第0位开始的，否则就是3）
  */
 
+class DigitAtIndex{
+    int findNumberAtIndex(int index){
+        if (index < 0)
+            return -1;
+        int digits = 1;
+        int ans = -1;
+        while (true){
+            int numbers = countOfIntegers(digits);
+            if (index < numbers * digits){
+                ans = findNumberAtIndexCore(index, digits);
+                break;
+            }
+            index -= numbers * digits;
+            digits++;
+        }
+        return ans;
+    }
+
+    int countOfIntegers(int digits){//用来得到m位的数字一共又多少个
+        if (digits == 1)
+            return 10;
+        int count = (int)Math.pow(10, digits - 1);
+        return 9 * count;
+    }
+
+    int findNumberAtIndexCore(int index, int digits){//当知道所求位于某m位数之后后，求出该数字
+        int number = beginNumber(digits) + index / digits;
+        System.out.println(number + " nnn");
+        int indexFromRight = digits - index % digits;//从第0位开始
+        for (int i = 1; i < indexFromRight; i++)
+            number = number/10;
+        return number % 10;
+    }
+
+    int beginNumber(int digits){
+        if (digits == 1)
+            return 0;
+        return (int)Math.pow(10, digits - 1);
+    }
+
+    public static void main(String[] args){
+        int n = 1001;
+        int ans = new DigitAtIndex().findNumberAtIndex(0);
+        System.out.println(ans);
+    }
+}
 
 
+/*
+45：把数组排成最小的整数
+描述：输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出所有数字中最小的一个。
+例如输入{3，32，321} 输出 321323
+思路：1：需要一个函数判断两个数字谁排在前面
+      2：隐含大数问题，两个数字都符合int但是拼接后不一定，因此用字符串表示。
+ */
+
+class FindMinCombinationOfNum{
+    void printMinNumber(int[] num){
+        if (num == null || num.length <= 0)
+            return;
+        int len = num.length;
+        String[] str = new String[len];
+        for (int i = 0; i < len; i++)
+            str[i] = String.valueOf(num[i]);
+        for (int i = 0; i  < len; i++){
+            int min = i;
+            for (int j = i + 1; j < len; j++){
+                if (compare1(str[i],str[j])){
+                    min = j;
+                }
+            }
+            if (min != i)
+                SwapArray.swap(str,i,min);
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String s : str)
+            stringBuilder.append(s);
+        System.out.println(stringBuilder.toString());
+    }
+
+    boolean compare(String s1, String s2){//s1s2 > s2s1   true
+        int length = s1.length() + s2.length();
+        String str1 = s1 + s2;
+        String str2 = s2 + s1;
+        for (int i = 0; i < length; i++){
+            if (Integer.parseInt(str1.substring(i, i + 1)) > Integer.parseInt(str2.substring(i, i + 1)))
+                return true;
+            if (Integer.parseInt(str1.substring(i, i + 1)) < Integer.parseInt(str2.substring(i, i + 1)))
+                return false;
+        }
+        return false;
+    }
+    boolean compare1(String s1, String s2){
+        int length = s1.length() + s2.length();
+        String str1 = s1 + s2;
+        String str2 = s2 + s1;
+        int flag = str1.compareTo(str2);
+        return flag > 0 ;
+    }
+
+    public static void main(String[] args){
+        int[] num = {3,32,321};
+        new FindMinCombinationOfNum().printMinNumber(num);
+    }
+}
 
 
-
+/*
+46：把数字翻译成字符串
+描述：给定一个数字，按照如下规则把它翻译成字符串：0 - "a", 1 - "b",......,11 - "l",......,25 - "z"
+一个数字可能有多种翻译，例如 12258可以翻译成 "bccfi","bwfi","bczi","mcfi","mzi"，编写函数计算一个数字有多少种翻译方法
+ */
 
