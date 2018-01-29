@@ -3017,13 +3017,66 @@ class FirstOneTimesCharInStream{
 
 /*
 51：数组中的逆序对
-描述：在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组从一个逆序对。输入一个数组，求出这个数组的逆序对
+描述：在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组从一个逆序对。
+输入一个数组，求出这个数组的逆序对
+
+思路：先将数组分隔成子数组，统计出子数组内部的逆序对的数目，然后再统计出两个相邻子数组之间的逆序对数目。
+在统计过程中，还需要对数组进行排序
+
+    如果第一个子数组中的数字大于第二个子数组中的数字，则构成逆序对，并且逆序对的数目就是第二个子数组中剩余的数字的个数
+    如果第一个数组中的数组小于或等于第二个数组中的数字，则不构成逆序对。每次比较的时候，
+    我们都把较大的数字从后往前复制到辅助数组，确保辅助数组中的数字是递增排序的，
+    在把较大的数字复制到辅助数组之后，把对应的指针向前移动一位
  */
+class InversionNumber{
+    int inversePair(int[] data){
+        if (data == null || data.length < 0)
+            return 0;
+        int[] copy = new int[data.length];
+        for (int i = 0; i <data.length; i++)
+            copy[i] = data[i];
+        return inversePairCore(data, copy,0,data.length - 1);
+    }
+    int inversePairCore(int[] data, int[] copy, int start, int end){
+        if (start == end){
+//            copy[start] = data[start];
+            return 0;
+        }
+        int length = (end - start) / 2;
+        int left = inversePairCore(copy, data, start,start + length);
+        int right = inversePairCore(copy, data,start + length + 1, end);
+        //i 初始化为前半段最后一个数字的下标
+        int i = start + length;
+        //j 初始化为后半段最后一个数字的下标
+        int j = end;
+        int indexCopy = end;
+        int count = 0;
+        while (i >= start && j >= start + length + 1){
+            if (data[i] > data[j]){
+                copy[indexCopy--] = data[i--];
+                count += j - start - length;
+            }else {
+                copy[indexCopy--] = data[j--];
+            }
+        }
+        for (; i >= start; --i)
+            copy[indexCopy--] = data[i];
+        for (; j >= start + length + 1; j--)
+            copy[indexCopy--] = data[j];
+        return left + right + count;
+    }
+    public static void main(String[] args){
+        int[] arr = {7,5,6,4};
+        System.out.println(new InversionNumber().inversePair(arr));
+    }
+}
 
 
 
-
-
+/*
+52：两个链表的第一个公共节点
+描述：输入两个链表，找出它们的第一个公共节点
+ */
 
 
 

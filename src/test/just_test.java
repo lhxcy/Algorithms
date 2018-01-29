@@ -2017,9 +2017,9 @@ class TestObjectChange{
 
 class TestIntAndChar{
     public static void main(String[] args){
-        String str = "123456";
-        char[] chs = str.toCharArray();
-        System.out.println((chs[0] - '0') < 1);
+//        String str = "123456";
+//        char[] chs = str.toCharArray();
+//        System.out.println((chs[0] - '0') < 1);
     }
 }
 
