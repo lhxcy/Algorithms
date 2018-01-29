@@ -2825,22 +2825,200 @@ class MaxValueOfGiftMatrix{
 
 /*
 48：最长不含重复字符的子字符串
-描述：青葱字符串中招呼最长的不包含重复字符的子字符串，计算改最长子字符串的长度
+描述：请从字符串中招呼最长的不包含重复字符的子字符串，计算改最长子字符串的长度
+思路：动态规划
+      定义f(i)表示以第i个字符为结尾的不包含重复字符的子字符串的最长长度。从左向右扫
+      如果第i个字符没有出现，f(i) = f(i-1) + 1
+      如果第i个字符出现过，先计算第i个字符和它上次出现在字符串中的位置的距离，记为d
+      如果d <= f(i-1),此时第i个字符上次出现在f(i-1)对应的最长子字符串之中，所以f(i) = d
+      如果d >f(i-1),此时第i个字符上次出现在f(i-1)对应的最长子字符串之前，仍然有f(i) = f(i-1) + 1
  */
 
+class FindMaxLengthOfNoRepeatSubstring{
+    int findLongestSubstringWithoutDuplication(String str){
+        int curLength = 0;
+        int maxLength = 0;
+        char[] chs = str.toCharArray();
+        int[] position = new int[26];//记录当前字符上次出现的位置
+        for (int i = 0; i < 26; i++)
+            position[i] = -1;
+        for (int i = 0; i < chs.length; i++){
+            int preIndex = position[chs[i] - 'a'];
+            if (preIndex < 0 || i - preIndex > curLength)
+                ++curLength;
+            else {
+                if (curLength > maxLength)
+                    maxLength = curLength;
+                curLength = i - preIndex;
+            }
+            position[chs[i] - 'a'] = i;
+        }
+        if (curLength > maxLength)
+            maxLength = curLength;
+        return maxLength;
+    }
+    public static void main(String[] args){
+        String str = "arabcacfr";
+        System.out.println(new FindMaxLengthOfNoRepeatSubstring().findLongestSubstringWithoutDuplication(str));
+    }
+}
 
 
+/*
+49：丑数
+丑数定义：我们把只包含因子2、3、5的数称作丑数
+描述：求从小到大的顺序的第1500个丑数，习惯上，我们把1当作第一个丑数
+思路：1：暴力
+      2：创建数组记录丑数
+      假设数组中已经有若干个排序号的丑数，最大的记为m，
+            方法1：将所有丑数乘以2，找出第一个大于m的丑数m2存入下一个位置
+            方法1：将所有丑数乘以3，找出第一个大于m的丑数m3存入下一个位置
+            方法1：将所有丑数乘以5，找出第一个大于m的丑数m5存入下一个位置...
+            方法2:事实上对于乘以2，看的存在一个t2，排在他之前的每个丑数乘以2都小于m，之后乘以2都大于m
+                我们只需记下这个位置，每次产生丑数时更新t2即可，同样存在t3、t5
+ */
+
+class UglyNumber{
+    //暴力方法
+    int getUglyNumber(int index){
+        if (index < 0)
+            return 0;
+        int number = 0;
+        int ugly = 0;
+        while (ugly < index){
+            ++number;
+            if (isUgly(number)){
+                ++ugly;
+            }
+        }
+        return number;
+    }
+    boolean isUgly(int number){
+        while (number % 2 == 0)
+            number /= 2;
+        while (number % 3 == 0)
+            number /= 3;
+        while (number % 5  == 0)
+            number /= 5;
+        return number == 1;
+    }
 
 
+    //方法二
+    int getUglyNumber2(int index){
+        if (index <= 0)
+            return 0;
+        int[] uglyNumber = new int[index];
+        uglyNumber[0] = 1;
+        int nextUglyIndex = 1, minNumber;
+        int nextIndex2 = 0, nextIndex3 = 0, nextIndex5 = 0;
+        while (nextUglyIndex < index){
+            minNumber = min(uglyNumber[nextIndex2]*2, uglyNumber[nextIndex3]*3, uglyNumber[nextIndex5]*5);
+            uglyNumber[nextUglyIndex] = minNumber;
+            while (uglyNumber[nextIndex2]*2 <= minNumber)
+                nextIndex2++;
+            while (uglyNumber[nextIndex3]*3 <= minNumber)
+                nextIndex3++;
+            while (uglyNumber[nextIndex5]*5 <= minNumber)
+                nextIndex5++;
+            ++nextUglyIndex;
+        }
+        return uglyNumber[nextUglyIndex - 1];
+    }
+    int min(int num1, int num2, int num3){
+        int min = num1 < num2 ? num1 : num2;
+        min = min < num3 ? min : num3;
+        return min;
+    }
+    public static void main(String[] args){
+        int index = 0;
+        long time = System.currentTimeMillis();
+        System.out.println(new UglyNumber().getUglyNumber(index));
+        System.out.println(System.currentTimeMillis() - time);
+
+        long time1 = System.currentTimeMillis();
+        System.out.println(new UglyNumber().getUglyNumber2(index));
+        System.out.println(System.currentTimeMillis() - time1);
+    }
+}
 
 
+/*
+50：第一个只出现一次的字符
+ */
+/*
+题目一：字符串中第一个只出现一次的字符
+描述：在字符串中找到第一个只出现一次的字符。例如“abaccdeff” 输出b
+思路：使用hashMap
+ */
+class FirstOneTimesCharInString{
+    char getFirst(String str){
+        if (str.equals(""))
+            return '\0';
+        char[] chs = str.toCharArray();
+        int tableSize = 256;//ASCII  256个字符
+//        HashMap map = new HashMap(256);
+        int[] map = new int[tableSize];
+        for (int i = 0; i < tableSize; i++)
+            map[i] = 0;
+        for (char c : chs){
+            map[c]++;
+        }
+        for (char c  : chs){
+            if (map[c] == 1)
+                return c;
+        }
+        return '\0';
+    }
+    public static void main(String[] args){
+        String str = "abaccdeff";
+        System.out.println(new FirstOneTimesCharInString().getFirst(str));
+    }
+}
 
 
+/*
+题目二：字符流中第一个只出现一次的字符
+描述：实现函数，用来中出字符流中的第一个只出现一次的字符。
+例如，当从字符流中只读出前两个字符“go”时，第一个只出现一次的字符是g，当从字符流中只读出前六个字符“google”时，
+第一个只出现一次的字符是l
+思路：因为是字符流，当读到一个字符时，该字符存入容器，如果再一次读到该字符，那么它就不是只出现一次的字符，
+也就可以忽略，这是把容器里保存的值更新为一个特殊值，如负数
+ */
+
+class FirstOneTimesCharInStream{
+    private int index = 0;//记录每个词的下标
+    private int[] occurenced;
+    void init(){
+        occurenced = new int[256];
+        for (int i = 0; i < 256; i++)
+            occurenced[i] = -1;
+    }
+    void insert(char ch){
+        if (occurenced[ch] == -1)
+            occurenced[ch] = index;
+        else if (occurenced[ch] >= 0)
+            occurenced[ch] = -2;
+        index++;
+    }
+    char getFirst(){
+        char ch = '\0';
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < 256; i++){
+            if (occurenced[i] >= 0 && occurenced[i] < min){
+                ch = (char)i;
+                min = occurenced[i];
+            }
+        }
+        return ch;
+    }
+}
 
 
-
-
-
+/*
+51：数组中的逆序对
+描述：在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组从一个逆序对。输入一个数组，求出这个数组的逆序对
+ */
 
 
 
