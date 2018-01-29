@@ -2697,5 +2697,173 @@ class FindMinCombinationOfNum{
 46：把数字翻译成字符串
 描述：给定一个数字，按照如下规则把它翻译成字符串：0 - "a", 1 - "b",......,11 - "l",......,25 - "z"
 一个数字可能有多种翻译，例如 12258可以翻译成 "bccfi","bwfi","bczi","mcfi","mzi"，编写函数计算一个数字有多少种翻译方法
+思路：使用递归来解决。定义f(i)表示从第i位数字开始的不同翻译数目，那么f(i)= f(i+1) + g(i,i+1)*f(i+2),
+    其中，当第i位和第i+1位数字凭借其来的数字在10 - 25的范围时，g(i,i+1) = 1,否则为0
+    由于从前向后会存在重复计算问题，因此考虑从后向前计算
  */
+
+class TranslateInt2String{
+    int getTranslateCount(int number){
+        if (number < 0)
+            return 0;
+        String str = String.valueOf(number);
+        char[] chs = str.toCharArray();
+        return getTranslateCountCore(chs);
+    }
+    int getTranslateCountCore(char[] chs){
+        int length = chs.length;
+        int[] counts = new int[length];
+        int count = 0;
+        for (int i = length - 1; i >= 0; i--){
+            count = 0;
+            if (i < length - 1)
+                count = counts[i + 1];
+            else count = 1;
+            if (i < length - 1){
+                int digit1 = chs[i] - '0';
+                int digit2 = chs[i + 1] - '0';
+                int converted = digit1 * 10 + digit2;
+                if (converted >= 10 && converted <= 25){
+                    if (i < length - 2)
+                        count += counts[i + 2];
+                    else count += 1;
+                }
+            }
+            counts[i] = count;
+        }
+        count = counts[0];
+        return count;
+    }
+    public static void main(String[] args){
+        int num = 12258;
+        System.out.println(new TranslateInt2String().getTranslateCount(num));
+    }
+}
+
+
+/*
+47：礼物的最大价值
+描述：在一个m*n的棋盘的每一格都放有一个礼物，每个礼物都有一定的价值（价值大于0）。
+你可以从期盼的左上角开始拿格子里的礼物，并每次向左或向下移动一格，知道到达棋盘的右下角。
+给定一个棋盘机器上面的礼物，请计算你最多能拿到多少价值的礼物
+
+思路：动态规划
+      1：定义函数f(i,j)表示到达坐标(i,j)的格子时能拿到的礼物的最大值，根据题目要求，我们有两种可能的途径叨叨坐标(i,j)
+      的格子，通过格子(i-1,j)或者(i,j-1)，所以f(i,j) = max((i-1,j),(i,j-1))+gift[i,j],gift[i,j]表示坐标(i,j)里的礼物价值
+      2:由于上面方法空间需求多，我们进一步优化。上面我们提到到达坐标为(i,j)的格子时能拿到的礼物的最大值只依赖于(i-1,j)和
+      (i,j-1)的两个格子，因此第i-2行及更上面的礼物的最大值实际上没必要保存下下来。使用一维数组代替上面的二维数组。
+      该数组前j个数字分表表示当前第i行前面j个格子礼物的最大值，而之后的数字分表表村前面第i-1行n-j个格子礼物的最大值
+
+ */
+class MaxValueOfGiftMatrix{
+    //1
+    int getMaxValue(int[][] gift){
+        if (gift == null || gift[0] == null || gift.length <= 0 || gift[0].length <= 0)
+            return 0;
+        int[][] maxValueDP = new int[gift.length][gift[0].length];
+        for (int i = 0; i < gift.length; i++){
+            for (int j = 0; j < gift[0].length; j++){
+                int left = 0;
+                int up = 0;
+                if (i > 0)
+                    up = maxValueDP[i-1][j];
+                if (j > 0)
+                    left = maxValueDP[i][j-1];
+                maxValueDP[i][j] = Math.max(up,left) + gift[i][j];
+            }
+        }
+
+        return maxValueDP[gift.length-1][gift[0].length-1];
+    }
+
+    //2 列
+    int getMaxValue2(int[][] gift){
+        if (gift == null || gift[0] == null || gift.length <= 0 || gift[0].length <= 0)
+            return 0;
+        int[] maxValueDP = new int[gift[0].length];//列
+        for (int i = 0; i < gift.length; i++){
+            for (int j = 0; j < gift[0].length; j++){
+                int left = 0;
+                int up = 0;
+                if (i > 0)
+                    up = maxValueDP[j];
+                if (j > 0)
+                    left = maxValueDP[j - 1];
+                maxValueDP[j] = Math.max(up,left) + gift[i][j];
+            }
+        }
+        return maxValueDP[gift[0].length - 1];
+    }
+
+    //3 行 maxValueDP[i] 表示第j列前面i个格子礼物的最大值
+    int getMaxValue3(int[][] gift){
+        if (gift == null || gift[0] == null || gift.length <= 0 || gift[0].length <= 0)
+            return 0;
+        int[] maxValueDP = new int[gift.length];
+        for (int j = 0; j < gift[0].length; j++){
+            for (int i = 0; i < gift.length; i++){
+                int left = 0;
+                int up = 0;
+                if (i > 0)
+                    up = maxValueDP[i - 1];
+                if (j > 0)
+                    left = maxValueDP[i];
+                maxValueDP[i] = Math.max(up,left) + gift[i][j];
+            }
+        }
+        return maxValueDP[gift.length - 1];
+    }
+    public static void main(String[] args){
+        int[][] gift = {{1,10,3,8},{12,2,9,6},{5,7,4,11},{3,7,16,5}};
+        System.out.println(new MaxValueOfGiftMatrix().getMaxValue(gift));
+        System.out.println(new MaxValueOfGiftMatrix().getMaxValue2(gift));
+        System.out.println(new MaxValueOfGiftMatrix().getMaxValue3(gift));
+    }
+}
+
+
+
+/*
+48：最长不含重复字符的子字符串
+描述：青葱字符串中招呼最长的不包含重复字符的子字符串，计算改最长子字符串的长度
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
