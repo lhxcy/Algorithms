@@ -3077,17 +3077,176 @@ class InversionNumber{
 52：两个链表的第一个公共节点
 描述：输入两个链表，找出它们的第一个公共节点
  */
+class FindFirstCommonNode{
+    ListNode getFirstCommonNode(ListNode head1, ListNode head2){
+        int length1 = getListLength(head1);
+        int length2 = getListLength(head2);
+        int lengthDif = length1 - length2;
+        ListNode tempLong = head1;
+        ListNode tempShort = head2;
+        if (length2 > length1){
+            tempLong = head2;
+            tempShort = head1;
+            lengthDif = length2 - length1;
+        }
+        //先在长链表上走几步，使两个链表剩余长度相同
+        for (int i = 0; i < lengthDif; i++)
+            tempLong = tempLong.next;
+        while (tempLong != null && tempShort != null && tempLong != tempShort){
+            tempLong = tempLong.next;
+            tempShort = tempShort.next;
+        }
+        return tempLong;
+    }
+
+    int getListLength(ListNode head){
+        int length = 0;
+        ListNode tempNode = head;
+        while (tempNode != null){
+            ++length;
+            tempNode = tempNode.next;
+        }
+        return length;
+    }
+}
 
 
 
+/*
+53：在排序的数组中查找数字
+ */
+/*
+题目一：数字在骗子徐数组中出现的次数
+描述：统计一个数字在排序数组中出现的次数
+思路：1：用二分查找到数字，前后延伸记录次数
+      2：用二分查找找到数字的第一位和最后一位
+ */
+
+class FindTimesOfNum{
+    int getFirstK(int[] data, int k, int start, int end){
+        if (start > end)
+            return -1;
+        int middleIndex = (end + start) / 2;
+        int middleData = data[middleIndex];
+        if (middleData == k){
+            if ((middleIndex > 0 && data[middleIndex - 1] != k) || middleIndex == 0)
+                return middleIndex;
+            else end = middleIndex - 1;
+        }else if (middleData > k)
+            end = middleIndex - 1;
+        else start = middleIndex + 1;
+        return getFirstK(data, k, start, end);
+    }
+    int getFirstK1(int[] data, int k, int start, int end){
+        int firstK = -1;
+        while (start <= end){
+            int middleIndex = (end + start) / 2;
+            int middleData = data[middleIndex];
+            if (middleData == k){
+                if ((middleIndex > 0 && data[middleIndex - 1] != k) || middleIndex == 0){
+                    firstK = middleIndex;
+                    break;
+                }
+                else end = middleIndex - 1;
+            }else if (middleData > k)
+                end = middleIndex - 1;
+            else start = middleIndex + 1;
+        }
+        return firstK;
+    }
+
+    int getLastK(int[] data, int k, int start, int end){
+        if (start > end)
+            return -1;
+        int middleIndex = (end + start) / 2;
+        int middleData = data[middleIndex];
+        if (middleData == k){
+            if ((middleIndex < data.length - 1 && data[middleIndex + 1] != k) || middleIndex == data.length - 1)
+                return middleIndex;
+            else start = middleIndex + 1;
+        }else if (middleData > k)
+            end = middleIndex - 1;
+        else start = middleIndex + 1;
+        return getLastK(data, k, start, end);
+    }
+
+    int getLastK1(int[] data, int k, int start, int end){
+        int lastK = -1;
+        while (start <= end){
+            int middleIndex = (end + start) / 2;
+            int middleData = data[middleIndex];
+            if (middleData == k){
+                if ((middleIndex < data.length - 1 && data[middleIndex + 1] != k) || middleIndex == data.length - 1){
+                    lastK = middleIndex;
+                    break;
+                }
+                else start = middleIndex + 1;
+            }else if (middleData > k)
+                end = middleIndex - 1;
+            else start = middleIndex + 1;
+        }
+        return lastK;
+    }
+
+    int getTimesOfK(int[] data, int k){
+        int times = 0;
+        if(data != null && data.length > 0){
+            int first = getFirstK(data, k, 0, data.length - 1);
+            int last = getLastK(data, k, 0, data.length - 1);
+            if (first > -1 && last > -1)
+                times = last - first + 1;
+        }
+        return times;
+    }
+    int getTimesOfK1(int[] data, int k){
+        int times = 0;
+        if(data != null && data.length > 0){
+            int first = getFirstK1(data, k, 0, data.length - 1);
+            int last = getLastK1(data, k, 0, data.length - 1);
+            if (first > -1 && last > -1) {
+                times = last - first + 1;
+            }
+        }
+        return times;
+    }
+    public static void main(String[] args){
+        int[]arr = {1,2,3,3,3,3,4,5};
+//        System.out.println(new FindTimesOfNum().getTimesOfK(arr,3));
+        System.out.println(new FindTimesOfNum().getTimesOfK1(arr,3));
+    }
+}
 
 
 
+/*
+题目二：0 - n-1中缺失的数字
+描述：一个长度为 n-1 的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围 0 - n-1 之内。
+在范围 0 - n-1内的n个数字中有且仅有一个数字不在改数组中，找出该数字
+ */
 
-
-
-
-
+class FindMissingNum{
+    int getMissingNum(int[] data){
+        if (data == null || data.length < 0)
+            return -1;
+        int left = 0;
+        int right = data.length - 1;
+        while (left <= right){
+            int middle = (left + right) / 2;
+            if (data[middle] != middle){
+                if (middle == 0 || data[middle - 1] == middle - 1)
+                    return middle;
+                right = middle - 1;
+            }else left = middle + 1;
+        }
+        if (left == data.length)//最后一位缺失
+            return left;
+        return -1;
+    }
+    public static void main(String[] args){
+        int[] arr = {0,1,2,3,4,5,6,7};
+        System.out.println(new FindMissingNum().getMissingNum(arr));
+    }
+}
 
 
 
