@@ -3249,9 +3249,190 @@ class FindMissingNum{
 }
 
 
+/*
+题目三：数组中和下标相等的元素
+描述：假设一个单调递增的数组里的每个元素都是整数并且是唯一的。
+编写函数，找出数组中任意一个数值等于其下标的元素
+思路：用二分法
+      假设某一部抵达数组中的第i个数字，如果该数字正好是i，那么刚好找到。
+      假设数字的值为m，先考虑m > i的情况，由于数组中的所有数组都唯一并且单调递增，
+      那么对于任意大于0的k，位于下标i+k上的值大于或等于m+k。又因为m > i,所以 m+k > i+k
+      这就意味着，如果第i位上的值大于i那么，它后面的所有数字都大于它的下标
+      m<i的情况一样
+ */
+
+class FindNumSameAsIndex{
+    int getNumSameAsIndex(int[] arr){
+        if (arr == null || arr.length < 0)
+            return -1;
+        int left = 0;
+        int right = arr.length - 1;
+        while (left <= right){
+            int middle = (left + right) / 2;
+            if (arr[middle] == middle)
+                return middle;
+            if (arr[middle] > middle)
+                right = middle - 1;
+            else left = middle + 1;
+        }
+        return -1;
+    }
+}
 
 
+/*
+54：二叉搜索树的第K大节点
+描述：给定一棵二叉搜索树，请找出其中第k大的节点
+思路：使用中序遍历即可
+ */
 
+class FindKthNode{
+    BiTreeNode getKthNode(BiTreeNode root, int k){
+        if (root == null || k == 0)
+            return null;
+        int[] packK = {k};
+        return getKthNodeCore(root,packK);
+    }
+    BiTreeNode getKthNodeCore(BiTreeNode root, int[] packK){
+        BiTreeNode target = null;
+        if (root.left != null)
+            target = getKthNodeCore(root.left, packK);
+        if (target == null){
+            if (packK[0] == 1)
+                target = root;
+            packK[0]--;
+        }
+        if (target == null && root.right != null)
+            target = getKthNodeCore(root.right, packK);
+        return target;
+    }
+    public static void main(String[] args){
+        BiTreeNode root1 = new BiTreeNode(5);
+        BiTreeNode root2 = new BiTreeNode(3);
+        BiTreeNode root3 = new BiTreeNode(7);
+        BiTreeNode root4 = new BiTreeNode(2);
+        BiTreeNode root5 = new BiTreeNode(4);
+        root1.left = root2;
+        root1.right = root3;
+        root2.left = root4;
+        root2.right = root5;
+        System.out.println(new FindKthNode().getKthNode(root1,3).value);
+    }
+}
+
+
+/*
+55：二叉树的深度
+描述：输入一个二叉树的根节点，求概述的深度。从根节点到叶节点一次经过的节点（含根节点和叶节点）形成一条路径。
+最长路径的长度为数的深度
+ */
+class GetDeepOfBiTree{
+    int getDeep(BiTreeNode root){
+        if (root == null)
+            return 0;
+        int left = getDeep(root.left);
+        int right = getDeep(root.right);
+        return Math.max(left, right) + 1;
+    }
+    int getDeep1(BiTreeNode root){
+        if (root == null)
+            return 0;
+        int left = 1 + getDeep(root.left);
+        int right = 1 +getDeep(root.right);
+        return Math.max(left, right);
+    }
+    public static void main(String[] args){
+        BiTreeNode root1 = new BiTreeNode(5);
+        BiTreeNode root2 = new BiTreeNode(3);
+        BiTreeNode root3 = new BiTreeNode(7);
+        BiTreeNode root4 = new BiTreeNode(2);
+        BiTreeNode root5 = new BiTreeNode(4);
+        BiTreeNode root6 = new BiTreeNode(8);
+        root1.left = root2;
+        root1.right = root3;
+        root2.left = root4;
+        root2.right = root5;
+        root5.left = root6;
+        System.out.println(new GetDeepOfBiTree().getDeep(root1));
+    }
+}
+
+/*
+题目二：平衡二叉树
+输入一棵二叉树的根节点，判断该数是不是平衡二叉树。
+ */
+
+class IsBalancedBiTree{
+    boolean isBalanced(BiTreeNode root){//该方法重复遍历多次节点，不是很好
+        if (root == null)
+            return true;
+        int leftDeep = getDeep(root.left);
+        int rightDeep = getDeep(root.right);
+        int dif = rightDeep - leftDeep;
+        if (dif > 1 || dif < -1)
+            return false;
+        return isBalanced(root.left) && isBalanced(root.right);
+    }
+    int getDeep(BiTreeNode root){
+        if (root == null)
+            return 0;
+        int left = getDeep(root.left);
+        int right = getDeep(root.right);
+        return Math.max(left, right) + 1;
+    }
+
+    boolean isBalanced1(BiTreeNode root){//该方法重复遍历多次节点，不是很好
+        int[] deep = {0};
+        boolean flag = isBalanced1Core(root,deep);
+        System.out.println(deep[0]);
+        return flag;
+    }
+    boolean isBalanced1Core(BiTreeNode root, int[] deep){//该方法重复遍历多次节点，不是很好
+        if (root == null){
+            deep[0] = 0;
+            return true;
+        }
+        int[] left = {0}, right = {0};
+        if (isBalanced1Core(root.left,left) && isBalanced1Core(root.right, right)){
+            int dif = left[0] - right[0];
+            if (dif <= 1 && dif >= -1){
+                deep[0] = 1 + (left[0] > right[0] ? left[0] : right[0]);
+                return true;
+            }
+        }
+        return false;
+    }
+    public static void main(String[] args){
+        BiTreeNode root1 = new BiTreeNode(5);
+        BiTreeNode root2 = new BiTreeNode(3);
+        BiTreeNode root3 = new BiTreeNode(7);
+        BiTreeNode root4 = new BiTreeNode(2);
+        BiTreeNode root5 = new BiTreeNode(4);
+        BiTreeNode root6 = new BiTreeNode(8);
+        root1.left = root2;
+        root1.right = root3;
+        root2.left = root4;
+        root2.right = root5;
+        root5.left = root6;
+        System.out.println(new IsBalancedBiTree().isBalanced(root1));
+        System.out.println(new IsBalancedBiTree().isBalanced1(root1));
+    }
+}
+
+
+/*
+56：数组中数字出现的次数
+ */
+/*
+题目一：数组中只出现一次的两个数字
+描述：数组里除了两个数字之外，其他数字都出现了两次。编写函数找出这两个只出现一次的数字
+要求时间复杂度O(n) 空间复杂度O(1)
+
+思路：异或 不同为1，相同为0
+      任何一个数字异或自己为0
+      假若一个数组中只有一个出现一次，其他数字出现2次，那么我们通过从开始异或到结尾，最后的结果就是该数字
+      该题的关键是把数组分为2个只包含一个出现一次的数的数组
+ */
 
 
 
