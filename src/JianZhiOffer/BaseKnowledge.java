@@ -3432,7 +3432,83 @@ class IsBalancedBiTree{
       任何一个数字异或自己为0
       假若一个数组中只有一个出现一次，其他数字出现2次，那么我们通过从开始异或到结尾，最后的结果就是该数字
       该题的关键是把数组分为2个只包含一个出现一次的数的数组
+      遍历数据，将所有数据异或，得到一值，找出该值的二进制中最右边为1的位数，然后再次遍历数据，将该位为1和
+      不为1的分为两部分，这两部分里每部分都包含一个出现一次的值
  */
+
+
+class FindNumAppearenceOnce{
+    void findNumApperanceOnce(int[] data){
+        int num1 = 0;
+        int num2 = 0;
+        if (data == null || data.length < 2)
+            return;
+        int result = 0;
+        for (int i : data)
+            result ^= i;
+        int indexOf1 = findFirstBitIs1(result);
+        for (int i = 0; i < data.length; i++){
+            if (isBit1(data[i],indexOf1))
+                num1 ^= data[i];
+            else num2 ^= data[i];
+        }
+        System.out.println(num1);
+        System.out.println(num2);
+    }
+    int findFirstBitIs1(int num){
+        int indexBit = 0;
+        while (((num & 0x1) == 0) && (indexBit < 8 * 4)){
+            num = num >> 1;
+            ++indexBit;
+        }
+        return indexBit;
+    }
+    boolean isBit1(int num, int indexBit){
+        num = num >> indexBit;
+        return (num & 0x1) == 1;
+    }
+    public static void main(String[] args){
+        int[] arr = {2,4,3,6,3,2,5,5};
+        new FindNumAppearenceOnce().findNumApperanceOnce(arr);
+    }
+}
+
+
+/*
+题目二：数组中唯一只出现一次的数字
+描述：在一个数组中除了一个数字只出现一次之外，其他数字都出现了三次，找出只出现一次的值
+思路：把数组中所有数字的二进制表示的每一位都加起来。如果某一位的和能被3整除，
+那么那个只出现一次的数字二进制表示中对应的那一位是0，否则就是1
+ */
+
+class FindNumAppearenceOnceThree{
+    int findNumOnce(int[] data) throws Exception{
+        if (data == null || data.length <= 0)
+            throw new Exception("data is error");
+        int[] bitSum = new int[32];
+        for (int i = 0; i < data.length; i++){
+            int bitMask = 1;
+            for (int j = 31; j >= 0; --j){
+                int bit = data[i] & bitMask;
+                if (bit != 0)
+                    bitSum[j] += 1;
+                bitMask = bitMask << 1;
+            }
+        }
+        int result = 0;
+        for (int i = 0; i < 32; ++i){
+            result = result << 1;
+            result += bitSum[i] % 3;
+        }
+        return result;
+    }
+}
+
+
+
+
+
+
 
 
 
