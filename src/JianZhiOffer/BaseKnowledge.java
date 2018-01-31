@@ -3863,18 +3863,101 @@ class CountProbability{
 如果空缺的总数小于或者等于0的个数，那么这个数组就是连续的，反之不连续，最后：如果数组中非0的数字重复出现，则该数组一定不是连续的
  */
 
+class IsContinuous{
+    boolean isContinuous(int[] arr){
+        if (arr == null || arr.length < 1)
+            return false;
+        Arrays.sort(arr);
+        int countOfZero = 0;//0是大小王，可以代替任何数
+        int numberOfGap = 0;
+        //统计数组中0的个数
+        for (int i = 0; i < arr.length && arr[i] == 0; ++i)
+            ++countOfZero;
+        //统计数组中的间隔数目
+        int small = countOfZero;
+        int big = small + 1;
+        while (big < arr.length){
+            //两个数字相等，有对子，不可能是顺子
+            if (arr[small] == arr[big])
+                return false;
+            numberOfGap += arr[big] - arr[small] - 1;
+            small = big;
+            big++;
+        }
+        return (numberOfGap <= countOfZero);
+    }
+    public static void main(String[] args){
+        int[] arr = {0,1,3,4,7};
+        System.out.println(new IsContinuous().isContinuous(arr));
+    }
+}
+
+
+
+/*
+62：圆圈中最后剩下的数字
+描述：0，1，2，......，n-1这n个数字排成一个圆圈，从数字0开始，每次从这个圈里删除第m个数字。求这个权利剩下的最后一个数字
+思路： 1：用环形链表模拟圆圈的经典揭发
+      2：分析每次倍删除的数字的规律并直接计算出圆圈中最后剩下的数字
+      方法二：
+            定义一个函数f(n,m)表示每次在n个数字 0 -- n-1中删除第m个数字最后剩下的数字
+            在这n个数字中第一个倍删除的数字是 k = (m-1)%n,删除k之后剩余的n-1个数字为0，1，...，k-1,k+1,...,n-1
+            并且下一次删除时从k+1开始计数。相当于在剩下的序列中，k+1排在最前面，从而形成序列k+1,...,n-1，0，1，...，k-1。
+            该序列剩余的数字也应该时关于n,m的函数，记为g(n-1,m)。最初序列删除到最后剩余的一个数字一定是删除一个数字之后的
+            序列最后剩下的数字，即f(n,m) = g(n-1,m).我们的目的是建立g(n-1,m)和f(n,m)之间的关系。
+            我们对重排序后的序列做一个映射P : (k+1-->0, k+2-->1,...,0-->n-k-1,...,k-1-->n-2) 即 P(x) = (x-k-1)%n
+            此时我们建立了f(n-1,m)和g(n-1,m)之间的关系 即P(g(n-1,m)) = f(n-1,m)。我们的目的是建立g(n-1,m)和f(n,m)之间的关系。
+            求出映射P的逆映射Q(x) = (x+k+1)%n，所以g(n-1,m) = (f(n-1,m)+k+1)%n，带入k = (m-1)%n得g(n-1,m) = (f(n-1,m)+m)%n
+            所以得递推公式f(n,m)=  0                当n=1时返回0
+                                (f(n-1,m)+m)%n    n > 1
+ */
+class LastNumber{
+    int getLast(int n, int m){//方法一
+        if (n < 1 || m < 1)
+            return -1;
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < n; ++i)
+            list.add(i);
+        int k = 0;//从第k个开始数
+        while (list.size() > 1){
+            k = k + m;
+            k = k % list.size() - 1;//第m个索引的位置
+            if (k < 0){//判断是否到队尾,若 k = -1，则说明到达队尾，需要删除队尾元素并把k重置为0
+                System.out.println(list.get(list.size()-1));
+                list.remove(list.size()-1);
+                k = 0;
+            }else {
+                System.out.println(list.get(k));
+                list.remove(k);
+            }
+        }
+        return list.get(0);
+    }
+
+    //方法二：
+
+    int getLast2(int n, int m){
+        if (n < 1 || m < 1)
+            return -1;
+        int last = 0;
+        for (int i = 2; i <= n; ++i)
+            last = (last + m) % i;
+        return last;
+    }
+
+    public static void main(String[] args){
+        System.out.println(new LastNumber().getLast(5,3) + "   ans");
+        System.out.println(new LastNumber().getLast2(5,3) + "   2ans");
+    }
+}
 
 
 
 
-
-
-
-
-
-
-
-
+/*
+63：股票得最大利润
+描述：假设把某股票得将按照时间先后顺序存储在数组中，请问买该股票一次可能获得最大利润是多少
+ */
 
 
 

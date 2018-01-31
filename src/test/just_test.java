@@ -2023,7 +2023,8 @@ class TestIntAndChar{
 //        int[] deep = {0};
 //        System.out.println(deep.length);
 //        double[] d = {}
-        System.out.printf("%.2f; %f", -756.403f, 7464.232641d);
+//        System.out.printf("%.2f; %f", -756.403f, 7464.232641d);
+        System.out.println(-2 % 3);
     }
 }
 
