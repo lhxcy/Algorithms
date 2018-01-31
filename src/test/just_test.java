@@ -2020,8 +2020,10 @@ class TestIntAndChar{
 //        String str = "123456";
 //        char[] chs = str.toCharArray();
 //        System.out.println((chs[0] - '0') < 1);
-        int[] deep = {0};
-        System.out.println(deep.length);
+//        int[] deep = {0};
+//        System.out.println(deep.length);
+//        double[] d = {}
+        System.out.printf("%.2f; %f", -756.403f, 7464.232641d);
     }
 }
 

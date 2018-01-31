@@ -3711,49 +3711,157 @@ class FindMaxNumInWindows{
 题目二：队列的最大值
 描述：定义一个队列并实现函数得到队列里的最大值，要求函数max,push,pop的时间复杂度都为O(1)
  */
-class Element{
-    int number;
-    int max;
-    Element next;
+
+class MyStack{
+   Stack<Integer> stack1 = new Stack<>();//存储数据
+   Stack<Integer> stack2 = new Stack<>();//存储最大值
+   public boolean isEmpty(){
+       return stack1.isEmpty();
+   }
+
+    public void push(int value){
+       stack1.push(value);
+       if (stack2.isEmpty())
+           stack2.push(value);
+       else stack2.push(Math.max(stack2.peek(),value));
+    }
+    public int pop(){
+        stack2.pop();
+        return stack1.pop();
+    }
+    public int getMax() throws Exception{
+        if(stack2.isEmpty())
+            throw new Exception("stack is empty!");
+        return stack2.peek();
+    }
 }
+
 class MyQueue{
-    Element[] data;
-    int front;
-    int back;
-    int size;
-    private MyQueue(){}
-    public static MyQueue getMyQueue(){
-        return new MyQueue();
+    MyStack stack1 = new MyStack();
+    MyStack stack2 = new MyStack();
+    public void offer(int value){
+        stack1.push(value);
+    }
+    public int poll(){
+        if (stack2.isEmpty()){
+            while (!stack1.isEmpty()){
+                stack2.push(stack1.pop());
+            }
+            return stack2.pop();
+        }else {
+            return stack2.pop();
+        }
+    }
+    public int getMax()throws Exception{
+        return Math.max(stack1.getMax(),stack2.getMax());
     }
 }
-class MaxQueue{
-    public MyQueue MaxQueueInit(){
-        Element[] data = new Element[100];
-        MyQueue myQueue = MyQueue.getMyQueue();
-        myQueue.data = data;
-        myQueue.size = 100;
-        myQueue.front =0;
-        myQueue.back =0;
-        return myQueue;
+
+
+
+
+/*
+60：n个骰子的点数
+描述：把n个骰子仍在地上，所有骰子朝上的一面的点数之和为s。输入n，打印出s的所有可能的值出现的概率
+
+n个骰子的点数之和最小为n，最大为6n。n个骰子的所有点数的排列数为6^n
+
+思路：
+     方法一：基于递归求骰子点数，时间效率不高
+     统计出每个点数出现的次数，然后把每个点数出现的次数初一6^n,求出每个点数的概率
+     如何计算每个点数出现的次数？把骰子分为两堆，第一堆1个，第二堆n-1。单独的哪一个可能出现1 - 6的点数，
+     我们需要计算1 - 6的点数和剩下的 n - 1个骰子来计算点数和。接下来把n - 1个骰子分为2堆，第一堆1个，第二堆 n-2个。。。
+     递归的结束条件就是只剩下一个骰子
+
+     方法二：基于循环求骰子点数，时间性能号
+     用两个数组存储骰子点数的每个总数出现的次数，在一轮循环中，第一个数组的第n的数字表示和为n的点数出现的次数，
+     在下一轮循环中，我们加上新的骰子，此时和为n的骰子出现的次数应该等于上一轮中骰子点数和为n-1,n-2,n-3,n-4,n-5,n-6的次数总和，
+     我们把另一个数组的第n个数字设为前一个数组对应的第n-1,n-2,n-3,n-4,n-5,n-6的数字之和
+ */
+
+class CountProbability{
+    void printProbability(int num){//方法一
+        if (num < 1)
+            return;
+        int maxSum = num * 6;
+        int[] probabilities = new int[maxSum - num + 1];//数组默认为0
+//        for (int i = num; i <= maxSum; ++i)
+//            probabilities[i - num] = 0;
+        probability(num,probabilities);
+//        for (int i : probabilities)
+//            System.out.print(i + " ");
+//        System.out.println();
+        double total = Math.pow(6.0,num);//排列总数
+//        System.out.println(total);
+        for (int i = num; i <= maxSum; ++i){
+            double p = probabilities[i - num] / total;
+            System.out.printf("%d : %.6f  ", i, p);//这里只能用%f，不能用%d来选取小数位数
+        }
+
     }
-    public void push(MyQueue queue,int number){
-        Element element = new Element();
-        element.number = number;
+    void probability(int num, int[] probabilities){
+        for (int i = 1; i <= 6; ++i){
+            probabilityCore(num, num,i,probabilities);
+        }
+    }
+    void probabilityCore(int original, int current, int sum, int[] probabilities){
+        if(current == 1){
+            probabilities[sum - original]++;
+        }else {
+            for (int i = 1; i <= 6; ++i)
+                probabilityCore(original, current - 1, i + sum, probabilities);
+        }
+    }
+
+
+    //方法二
+    void printProbability2(int num){
+        if (num < 1)
+            return;
+        int[][] probabiliies = new int[2][num * 6 + 1];//数组默认为0
+        int flag = 0;
+        for (int i = 1; i <= 6; ++i)
+            probabiliies[flag][i] = 1;
+        for (int k = 2; k <= num; k++){
+            for (int i = 0; i < k; ++i)
+                probabiliies[1 - flag][i] = 0;//保证多个骰子时，不可能有小于的值的存在
+            for (int i = k; i <= 6*k; ++i){//第k个骰子所能产生的和的范围
+                probabiliies[1-flag][i] = 0;
+                for (int j = 1; j <= i && j <= 6; ++j){
+                    probabiliies[1-flag][i] += probabiliies[flag][i-j];
+                }
+            }
+            flag = 1 - flag;
+        }
+        for (int i = num; i <= num*6; ++i)
+            System.out.print(probabiliies[flag][i] + " ");
+        System.out.println();
+        double total = Math.pow(6.0,num);
+        System.out.println(total);
+        for (int i = num; i <= 6 * num; ++i){
+            double p = probabiliies[flag][i] / total;
+            System.out.printf("%d : %6f  ", i, p);
+        }
+
+    }
+
+    public static void main(String[] args){
+        int num = 4;
+        new CountProbability().printProbability(num);
+        System.out.println();
+        new CountProbability().printProbability2(num);
     }
 
 }
 
 
 
-
-
-
-
-
-
-
-
-
+/*
+61：扑克牌中的顺子
+描述：从扑克牌中随机抽取5张牌，判断是不是一个顺子，即这五张牌是不是连续的。 2 -- 10为数字本身， J为11，Q为12，K为13，大小王可以看成任意数字
+思路：用数组表示，用0为存储大小王。 首先排序数组，其次统计数组中0的个数，最后统计排序之后的数组中相邻数字之间的空缺总数。
+如果空缺的总数小于或者等于0的个数，那么这个数组就是连续的，反之不连续，最后：如果数组中非0的数字重复出现，则该数组一定不是连续的
+ */
 
 
 
