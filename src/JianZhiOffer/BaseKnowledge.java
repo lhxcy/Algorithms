@@ -3505,6 +3505,290 @@ class FindNumAppearenceOnceThree{
 }
 
 
+/*
+57：和为s的数字
+ */
+/*
+题目一：和为s的两个数字
+描述：输入一个递增排序的数组和一个数字s，在数组中查找两个数，使得它们的和正好是s。
+如果有多对数字的和等于s，则输出任意一对即可
+
+思路一：先固定一个数k，接着用用二分查找 s-k
+思路二：两边压缩，左指针指向最左边，右指针指向最右边，如果左右指针指向的数字之和大于s，
+则右指针向左移，反之左指针向右移，知道遇见相等的情况，如果左指针大于等于右指针还没有找到等于的，返回false
+ */
+
+class FindTwoNumSumS{
+    boolean findTwoSum(int[] arr, int sum){
+        boolean flag = false;
+        if (arr == null || arr.length <= 0)
+            return false;
+        int left = 0;
+        int right = arr.length - 1;
+        while (left < right){
+            int curSum = arr[left] + arr[right];
+            if (curSum == sum){
+                System.out.println(arr[left]);
+                System.out.println(arr[right]);
+                flag = true;
+                break;
+            }
+            else if (curSum > sum)
+                --right;
+            else ++left;
+        }
+        return flag;
+    }
+    public static void main(String[] args){
+        int[] arr = {1,2,4,7,11,15};
+        new FindTwoNumSumS().findTwoSum(arr,15);
+    }
+}
+
+
+/*
+题目二：和为s的连续正数序列
+描述：输入一个正数s，打印出所有和为s的连续正数序列（至少含有两个数）,序列为{1，2，3，4，5.。。。。}
+思路：初始化left=1 和 right=2，如果从left+right>s，则small=small+1，反之right=right+1，若相等则打印
+一直增加 small到(1+s)/2为止
+ */
+
+class FindContinuousSequence{
+    void findSequence(int sum){
+        if (sum < 3)
+            return;
+        int left = 1;
+        int right = 2;
+        int middle = (1 + sum) / 2;
+        int curSum = left + right;
+        while (left < middle){
+            if (curSum == sum){
+                print(left,right);
+                ++right;
+                curSum += right;
+            }
+            else if (curSum > sum){
+                curSum -= left;
+                ++left;
+            }else {
+                ++right;
+                curSum += right;
+            }
+        }
+    }
+    void print(int left, int right){
+        for (int i = left; i <= right; i++){
+            System.out.print(i + " ");
+        }
+        System.out.println();
+    }
+    public static void main(String[] args){
+        new FindContinuousSequence().findSequence(25);
+    }
+}
+
+
+/*
+58：翻转字符串
+ */
+/*
+题目一：翻转单词顺序
+描述：输入哟个英文句子，反转句子中单词的顺序，但单词内字符的顺序不变，为简单起见，标点符号和普通字幕一样处理
+例如 “I am a student.” --> “student. a am I”
+ */
+
+class ReverseSeq{
+    String reverse(String str){
+        if (str.equals(""))
+            return null;
+        String[] strs = str.split(" ");
+        for (int i = 0, j = strs.length - 1; i < j; ++i,--j){
+            SwapArray.swap(strs,i,j);
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < strs.length; ++i){
+            if (i == 0)
+                stringBuilder.append(strs[i]);
+            else stringBuilder.append(" " + strs[i]);
+        }
+        return stringBuilder.toString();
+    }
+    public static void main(String[] args){
+        String str = "I am a student.";
+        System.out.println(new ReverseSeq().reverse(str));
+    }
+}
+
+
+
+/*
+题目二：左旋转字符串
+描述：字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部
+    请定义一个函数实现字符串的左旋转功能
+    例如输入"abcdefg", 2 输出 “bcdefgab”
+ */
+
+class LeftRotteString{
+    void reverse(char[] chs, int left, int right){
+        if (chs == null || left > right || right >chs.length)
+            return;
+        while (left < right){
+            char temp = chs[left];
+            chs[left] = chs[right];
+            chs[right] = temp;
+            ++left;
+            --right;
+        }
+    }
+
+    String leftRotate(String str, int n){
+        if (str.equals("") || str.length() <= 0 || n > str.length())
+            return null;
+        char[] chs = str.toCharArray();
+        reverse(chs,0,n - 1);
+        reverse(chs,n,chs.length - 1);
+        reverse(chs,0,chs.length - 1);
+        return String.valueOf(chs);
+    }
+    public static void main(String[] args){
+        String str = "abcdef";
+        System.out.println(new LeftRotteString().leftRotate(str, 3));
+    }
+}
+
+
+
+/*
+59：队列的最大值
+ */
+/*
+题目一：滑动窗口的最大值
+描述：给定一个数组和滑动窗口的大小，找出所有滑动窗口里的最大值
+思路一：可设计两个栈实现队列，该栈中包含最大值函数，（面试时时间不一定够）
+思路二：以{2，3，4，2，6，2，5，1}，窗口为3为例说明
+        第一个数字是2，把它存入队列，此时队列里只有2，第二个数字是3，由于它比2大，所以2不可能为窗口最大值，从队列删除2，加入3
+        第三个数字4的步骤类似，此时滑动窗口已经有3个数了，它的最大值是4.第4个数字是2，比4小，当4滑出窗口时，2可能为最大值，
+        因此把2加入队列尾部。此时队列只有4，2最大值仍是4。第5个数字是6，比2，4都打，因此2，4都不可能是最大值了，删除2，4.插入6
+        此时最大值为6，第6个数字是2，加入队列，第7个数字是5，比2大，此时删除2加入5，最大值仍是6.第8个数字是1，但此时6已经不在
+        窗口中，所以最大值是5.判断队列中最大值是不是在窗口里可以通过将下标存入队列而不是最大值存入队列来判断
+ */
+
+class FindMaxNumInWindows{
+    Queue findMaxInWindow(int[] arr, int size){
+        if (arr == null || size <= 0 || size >arr.length)
+            return null;
+        LinkedList<Integer> queueIndex = new LinkedList<Integer>();
+        Queue<Integer> maxNumQueue = new LinkedList<Integer>();
+        for (int i = 0; i < size; ++i){
+            while (!queueIndex.isEmpty() && arr[i] > arr[queueIndex.peekFirst()])
+                queueIndex.pollFirst();
+            queueIndex.offerFirst(i);
+        }
+        for (int i = size; i < arr.length; ++i){
+            maxNumQueue.offer(arr[queueIndex.peekFirst()]);
+            while (!queueIndex.isEmpty() && arr[i] > arr[queueIndex.peekLast()])
+                queueIndex.pollLast();
+            while (!queueIndex.isEmpty() && queueIndex.peekFirst() <= (int)(i - size))
+                queueIndex.pollFirst();
+            queueIndex.offerLast(i);
+        }
+        maxNumQueue.offer(arr[queueIndex.pollFirst()]);
+        return maxNumQueue;
+    }
+    public static void main(String[] args){
+        int[] arr = {2,3,4,2,6,2,5,1};
+        @SuppressWarnings("unchecked")
+        Queue<Integer> queue = (Queue<Integer>) new FindMaxNumInWindows().findMaxInWindow(arr,3);
+        for (Integer i : queue)
+            System.out.print(i + " ");
+    }
+}
+
+
+
+
+/*
+题目二：队列的最大值
+描述：定义一个队列并实现函数得到队列里的最大值，要求函数max,push,pop的时间复杂度都为O(1)
+ */
+class Element{
+    int number;
+    int max;
+    Element next;
+}
+class MyQueue{
+    Element[] data;
+    int front;
+    int back;
+    int size;
+    private MyQueue(){}
+    public static MyQueue getMyQueue(){
+        return new MyQueue();
+    }
+}
+class MaxQueue{
+    public MyQueue MaxQueueInit(){
+        Element[] data = new Element[100];
+        MyQueue myQueue = MyQueue.getMyQueue();
+        myQueue.data = data;
+        myQueue.size = 100;
+        myQueue.front =0;
+        myQueue.back =0;
+        return myQueue;
+    }
+    public void push(MyQueue queue,int number){
+        Element element = new Element();
+        element.number = number;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
