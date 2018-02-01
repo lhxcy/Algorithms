@@ -4052,11 +4052,75 @@ class AddNoPuls{
 
 /*
 66：构建乘积数组
+描述：给定一个数组，A[0,1,...,n-1]，请构建一个数组B[0,1,...,n-1],其中B中的元素b[i] = A[0]*A[1]*...*A[i-1]*A[i+1]*..*A[n-1],不能使用除法
  */
 
+class MultiplyWithoutDiv{
+    void multiply(double[] A, double[] B){
+        int aLen = A.length;
+        int bLen = B.length;
+        if (aLen == bLen && bLen > 1){
+            B[0] = 1;
+            for (int i = 1; i < aLen; ++i){
+                B[i] = B[i - 1] * A[i - 1];//这部分是计算A[0]*A[1]*...*A[i-1]
+            }
+            double temp = 1;
+            for (int i = aLen - 2; i >= 0; --i){
+                temp *= A[i + 1];//这部分是计算A[i+1]*..*A[n-1]
+                B[i] *= temp;
+            }
+        }
+    }
+}
 
 
+/*
+67：字符串转int
+描述：输入一个字符串，输出字符串对应的int值
+ */
+class StrToInt{
+    boolean flag = true;
+    int sToInt(String str){
+        if ("".equals(str)){
+            flag = false;
+            return 0;
+        }
+        char[] chs = str.toCharArray();
+        int i = 0;
+        for (;i < chs.length; ++i){
+            if (chs[i] != ' ' || chs[i] == '0')
+                break;
+        }
+        boolean positive = true;
+        int index = i;
+        int intPositive = 1;
+        if (chs[i] == '-' || chs[i] == '+'){
+            intPositive = chs[i] == '+' ? 1 : -1;
+            ++index;
+        }
+        long ans = 0;
+        for (; index < chs.length; ++index){
+            if(chs[index] >= '0' && chs[index] <= '9'){
+                ans = ans *10 + intPositive * (chs[index] - '0');
+                if(ans > 0x7fffffff)return 0x7fffffff;
+                if(ans < 0x80000000) return 0x80000000;
+//                if (ans > 0x7fffffff ||(!positive && ans < 0x80000000)){
+//                    flag = false;
+//                    return 0;
+//                }
+            }else {
+                flag = false;
+                return 0;
+            }
+        }
 
+        return (int)ans;
+    }
+    public static void main(String[] args){
+        String str = "-2147483649";
+        System.out.println(new StrToInt().sToInt(str));
+    }
+}
 
 
 
