@@ -4124,12 +4124,99 @@ class StrToInt{
 
 
 
+/*
+68：求树中两个结点的最低公共祖先
+描述：求树中两个结点的最低公共祖先，此树不是二叉树，并且没有指向父节点的指针。
+ */
+
+class FindFirstAncestor{
+    void getPath(BiTreeNode root, BiTreeNode target, List<BiTreeNode> list){
+        if (root == null)
+            return;
+        list.add(root);
+        if (root.left != null){
+            if (root.left == target){
+                list.add(root.left);
+                return;
+            }else {
+                getPath(root.left,target,list);
+            }
+        }
+        if (root.right != null){
+            if (root.right == target){
+                list.add(root.right);
+                return;
+            }else {
+                getPath(root.right,target,list);
+            }
+        }
+        list.remove(list.size()-1);
+    }
+    BiTreeNode getFirstCommonNode(BiTreeNode root, BiTreeNode node1, BiTreeNode node2){
+        List<BiTreeNode> list1 = new LinkedList<>();
+        List<BiTreeNode> list2 = new LinkedList<>();
+        getPath(root,node1,list1);
+        getPath(root,node2,list2);
+        BiTreeNode fistNode = null;
+        while (list1.size() > 0 && list2.size() > 0){
+            if (list1.get(0) == list2.get(0)){
+                fistNode = list1.get(0);
+                break;
+            }
+            list1.remove(0);
+            list2.remove(0);
+        }
+        return fistNode;
+    }
+    public static void main(String[] args){
+        BiTreeNode root1 = new BiTreeNode(5);
+        BiTreeNode root2 = new BiTreeNode(3);
+        BiTreeNode root3 = new BiTreeNode(7);
+        BiTreeNode root4 = new BiTreeNode(2);
+        BiTreeNode root5 = new BiTreeNode(4);
+        BiTreeNode root6 = new BiTreeNode(8);
+        root1.left = root2;
+        root1.right = root3;
+        root2.left = root4;
+        root2.right = root5;
+        root5.left = root6;
+        System.out.println(new FindFirstAncestor().getFirstCommonNode(root1,root5,root6).value);
+    }
+}
 
 
-
-
-
-
+class FindFirstAncestorWithParent{
+    BiTreeNode getFirstCommonNode(BiTreeNode root, BiTreeNode node1,BiTreeNode node2){
+        BiTreeNode temp1 = node1;
+        BiTreeNode temp2 = node2;
+        int len1 = 0, len2 = 0;
+        while (temp1 != null){
+            ++len1;
+            temp1 = temp1.parent;
+        }
+        while (temp2 != null){
+            ++len2;
+            temp2 = temp2.parent;
+        }
+        BiTreeNode longList = node1;
+        BiTreeNode shortList = node2;
+        int diff = len1 - len2;
+        if (len1 < len2){
+            longList = node2;
+            shortList = node1;
+            diff = len2 - len1;
+        }
+        for (int i = 0; i < diff; ++i)
+            longList = longList.parent;
+        while (longList != null && shortList != null){
+            if (longList == shortList)
+                return longList;
+            longList = longList.parent;
+            shortList = shortList.parent;
+        }
+        return null;
+    }
+}
 
 
 
