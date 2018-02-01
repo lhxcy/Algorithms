@@ -83,7 +83,7 @@ class SingleDemo4{//懒汉式另一种解决方案
 
 
 
-//3 找出数组中重复的数字
+//03： 找出数组中重复的数字
 //描述：数组长度为n，存入的数组在0-(n-1)，找出数组中重复的数字
 //下面算法不能找出所有重复数字
 class FindDuplication{//时间复杂度 O(n) 空间复杂度O(1)
@@ -208,7 +208,7 @@ class FindDuplicationNoChange{//通过二分思想来解决问题  时间复杂�
 
 
 
-//4 二维数组中的查找
+//04： 二维数组中的查找
 //描述：在一个二维数组中，每一行从左到右递增，每一列从上到下递增，
 //输入一个这样的二维数组和一个数字，判断该数字是否在二维数组中
 
@@ -266,7 +266,7 @@ class FindNumInArray{
 }
 
 
-//5 替换空格
+//05： 替换空格
 //描述：把字符数组中空格变为 %20 代替
 //思路：从后向前遍历
 class ReplaceSpace{
@@ -304,7 +304,7 @@ class ReplaceSpace{
 
 
 /*
-6 从尾到头打印链表
+06： 从尾到头打印链表
  */
 class ListNode{
     public int value;
@@ -477,7 +477,7 @@ class UnRecursiveTraverse{
 
 
 /*
-7 重建二叉树      ///////////////需要学习
+07： 重建二叉树      ///////////////需要学习
 描述：输入某二叉树前序和中序遍历的结果，请重建该二叉树
 假设输入的前序和中序遍历的结果中都不含重复数字，例如：
 前序：{1，2，4，7，3，5，6，8}
@@ -526,7 +526,7 @@ class ConstructBiTree{
 
 
 /*
-8 二叉树的下一个节点
+08： 二叉树的下一个节点
 描述：给定一个二叉树和其中的一个节点，如何找出中序遍历序列的下一个节点？
 树中的节点除了有两个分别指向左右子树的指针，还有一个指向父节点的指针
 思路：
@@ -560,7 +560,7 @@ class GetNextNodeInBiTree{
 }
 
 /*
-9； 用两个栈实现队列
+09： 用两个栈实现队列
 描述：实现appendTail和deleteHead
  */
 class ImplementQueueByStack<T>{
@@ -1327,7 +1327,7 @@ class FindKthListNode{
             if (preNode.next != null)
                 preNode = preNode.next;
             else
-                return null;//跳出当前方法
+                return null;//返回
      }
         while (preNode.next != null){
             preNode = preNode.next;
@@ -1548,8 +1548,8 @@ class BiTreeIsSymmetrical{
             return false;
         if (root1.value != root2.value)
             return false;
-        return isSymmetricalCore(root1.left, root2.left) &&
-                isSymmetricalCore(root1.right, root2.right);
+        return isSymmetricalCore(root1.left, root2.right) &&
+                isSymmetricalCore(root1.right, root2.left);
     }
 }
 
@@ -3118,7 +3118,7 @@ class FindFirstCommonNode{
 53：在排序的数组中查找数字
  */
 /*
-题目一：数字在骗子徐数组中出现的次数
+题目一：数字在排序数组中出现的次数
 描述：统计一个数字在排序数组中出现的次数
 思路：1：用二分查找到数字，前后延伸记录次数
       2：用二分查找找到数字的第一位和最后一位
