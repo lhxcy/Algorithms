@@ -3,6 +3,8 @@ package JianZhiOffer;
 import ZuoChengYun_exercise._40_reverseList;
 import com.sun.org.apache.xalan.internal.xsltc.dom.SimpleResultTreeImpl;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.Executor;
 
@@ -3956,23 +3958,101 @@ class LastNumber{
 
 /*
 63：股票得最大利润
-描述：假设把某股票得将按照时间先后顺序存储在数组中，请问买该股票一次可能获得最大利润是多少
+描述：假设把某股票得将按照时间先后顺序存储在数组中，请问买该股票一次可能获得最大利润是多少 ？
+例如：一只股票在某些时间节点得价格为{9，11，8，5，7，12，16，14}.如果在价格为5是买进，16时卖出，则能获得的最大利润是11
  */
 
+class MaxProfit{
+    int getMaxProfit(int[] arr){
+        if(arr == null || arr.length < 2)
+            return 0;
+        int min = arr[0];
+        int maxDiff = arr[1] - min;
+        for (int i = 2; i < arr.length; i++){
+            if (arr[i - 1] < min)
+                min = arr[i - 1];
+            int currentDiff = arr[i] - min;
+            if (currentDiff > maxDiff)
+                maxDiff = currentDiff;
+        }
+        return maxDiff;
+    }
+    public static void main(String[] args){
+        int[] arr= {9,11,8,5,7,12,16,14};
+        System.out.println(new MaxProfit().getMaxProfit(arr));
+    }
+}
 
 
 
+/*
+64：求 1+2+3+...+n
+描述：求1+2+3+...+n，要求不能使用乘法、for、while、if、else、switch、case等关键字以及条件判断语句
+思路：利用反射构建递归出口
+ */
+class GetSumN {
+
+    public int terminator(int n) {
+        return 0;
+    }
+    public int sum(int n) throws Exception {//有问题，没调通，反射还不会
+        List<Boolean> list = new ArrayList<>();
+        list.add(false);
+        list.add(true);
+        // reflecting all the public member methods of the class or interface represented by this Class object
+        // The elements in the array returned are not sorted and are not in any particular order.
+        Method[] methods = this.getClass().getMethods();
+        for (Method method : methods)
+            System.out.println(method);
+        int index = list.indexOf(n == 0);// 仅当n==0的时候执行terminator()方法
+        System.out.println((int) methods[index].invoke(this, (n)));
+
+        return n + (int) methods[index].invoke(this, (--n));
+    }
+
+    public int getSum(int n){
+        int result = 0;
+        int a = 1;
+        boolean flag = ((n != 0) && a == (result = getSum(n-1)));
+        result += n;
+        return result;
+    }
+
+    public static void main(String[] args) throws Exception{
+        GetSumN getSumN = new GetSumN();
+        System.out.println(getSumN.getSum(5));
+    }
+}
 
 
 
+/*
+65：不用加减乘除做加法
+描述：切一个函数，求两个整数之和，要求函数体内不得使用+，-，*，/四则运算符号
+思路：位运算
+ */
+
+class AddNoPuls{
+    int add(int m, int n){
+        int sum,carry;
+        do {
+            sum = m ^ n;//相同位0，不同为1，相当于直接相加不考虑进位
+            carry = (m & n) << 1;//进位
+            m = sum;
+            n = carry;
+        }while (n != 0);
+        return m;
+    }
+    public static void main(String[] args){
+        System.out.println(new AddNoPuls().add(7,8));
+    }
+}
 
 
 
-
-
-
-
-
+/*
+66：构建乘积数组
+ */
 
 
 
