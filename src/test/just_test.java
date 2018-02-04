@@ -2016,6 +2016,7 @@ class TestObjectChange{
 
 
 class TestIntAndChar{
+    private static void test(){}
     public static void main(String[] args){
 //        String str = "123456";
 //        char[] chs = str.toCharArray();
@@ -2029,7 +2030,19 @@ class TestIntAndChar{
 }
 
 
+class TestConstructor{
+    public TestConstructor(){
+        System.out.println("Constructor");
+    }
+    public void TestConstructor(){
+        System.out.println("method");
+    }
 
+    public static void main(String[] args){
+        TestConstructor testConstructor = new TestConstructor();
+        testConstructor.TestConstructor();
+    }
+}
 
 
 

@@ -3995,17 +3995,26 @@ class GetSumN {
     public int terminator(int n) {
         return 0;
     }
-    public int sum(int n) throws Exception {//有问题，没调通，反射还不会
+    public int sum(int n) throws Exception {//有问题，没调通，反射还不会   ///搞定 直接发现特定方法而没有用getMethods发现所有方法
         List<Boolean> list = new ArrayList<>();
         list.add(false);
         list.add(true);
         // reflecting all the public member methods of the class or interface represented by this Class object
         // The elements in the array returned are not sorted and are not in any particular order.
-        Method[] methods = this.getClass().getMethods();
-        for (Method method : methods)
-            System.out.println(method);
+//        Method[] methods = this.getClass().getMethods();
+        Method[] methods = new Method[2];
+        try {
+
+            methods[0] = this.getClass().getMethod("sum", int.class);
+            methods[1] = this.getClass().getMethod("terminator", int.class);
+        }catch (Exception e){
+            throw new Exception();
+        }
+        System.out.println(methods[0]);
+        System.out.println(methods[1]);
+        System.out.println(n);
         int index = list.indexOf(n == 0);// 仅当n==0的时候执行terminator()方法
-        System.out.println((int) methods[index].invoke(this, (n)));
+        System.out.println( index);
 
         return n + (int) methods[index].invoke(this, (--n));
     }
@@ -4020,7 +4029,8 @@ class GetSumN {
 
     public static void main(String[] args) throws Exception{
         GetSumN getSumN = new GetSumN();
-        System.out.println(getSumN.getSum(5));
+//        System.out.println(getSumN.getSum(5));
+        System.out.println(getSumN.sum(10));
     }
 }
 
